@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require_once __DIR__ . '../Services/AuthService.php';
+require_once __DIR__ . '/../app/Services/AuthService.php';
 
 $auth = new AuthService();
 
@@ -53,13 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <form method="POST" action="login.php">
         <div class="login-form-group">
-          <label for="username">Username:</label>
+          <label for="email">Email:</label>
           <input
             type="text"
-            id="username"
-            name="username"
-            placeholder="Enter username"
-            value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
+            id="email"
+            name="email"
+            placeholder="Enter email"
+            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
             required
           />
         </div>

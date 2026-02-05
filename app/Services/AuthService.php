@@ -42,14 +42,14 @@ class AuthService
 
     public function login($email, $password)
     {
-        $user = $this->repo->getUserByEmail($email); //find user by email, return their whole info
+        $user = $this->userRepo->getUserByEmail($email); //find user by email, return their whole info
 
         if (!$user) {
             return ['success' => false, 'message' => 'Invalid email or password.'];
         }
 
-        if (!password_verify($password, $user->password)) { //verify password
-            return['success' => false, 'message' => 'Invalid email or password.'];
+        if (!password_verify($password, $user->password_hash)) { //verify password
+            return['success' => false, 'message' => 'Invalid password.'];
         }
 
         //start session
@@ -57,10 +57,10 @@ class AuthService
             session_start();
         }
 
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['role'] = $user['role'];
+        $_SESSION['user_id'] = $user->user_id;
+        $_SESSION['username'] = $user->username;
+        $_SESSION['email'] = $user->email;
+        $_SESSION['role'] = $user->role;
 
         return ['success' => true, 'message' => 'Login successfull.', 'user' => $user];
     }

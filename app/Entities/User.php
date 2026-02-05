@@ -6,17 +6,17 @@ class User
     public $username;
     public $email;
     public $role;
-    public $password;
+    public $password_hash;
     public $created_at;
 
     public function __construct($data = [])
     {
         if (!empty($data)) {
-            $this->id = $data['id'] ?? null;
+            $this->id = $data['user_id'] ?? null;
             $this->username = $data['username'] ?? null;
             $this->email = $data['email'] ?? null;
             $this->role = $data['role'] ?? null;
-            $this->password = $data['password'] ?? null;
+            $this->password_hash = $data['password_hash'] ?? null;
             $this->created_at = $data['created_at'] ?? null;
         }
     }
@@ -43,7 +43,7 @@ class User
             'username' => $this->username,
             'email' => $this->email,
             'role' => $this->role,
-            'password' => $this->password,
+            'password' => $this->password_hash,
             'created_at' => $this->created_at
         ];
     }

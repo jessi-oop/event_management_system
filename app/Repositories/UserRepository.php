@@ -33,7 +33,7 @@ class UserRepository
     {
         try {
             $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt = execute([$email]);
+            $stmt->execute([$email]);
             //Fetch the data that was returned by the query
             $data = $stmt->fetch();
 
@@ -74,7 +74,7 @@ class UserRepository
             $users = []; //an array of associative arrays that will hold user data/user objet
 
             while ($data = $stmt->fetch()) { //fetch the returned value and store it into the users array
-                $users = new User($data);
+                $users[] = new User($data);
             }
 
             return $users;
@@ -89,7 +89,7 @@ class UserRepository
     {
         try {
             $stmt = $this->db->prepare('UPDATE users SET username = ?, email = ? WHERE user_id = ?');
-            return $stmt->excute([$username, $email, $id]);
+            return $stmt->execute([$username, $email, $id]);
         } catch (PDOException $e) {
             error_log('Error updating user info: ' . $e->getMessage());
             return false;
@@ -101,7 +101,7 @@ class UserRepository
     {
         try {
             $stmt = $this->db->prepare('DELETE FROM users WHERE user_id = ?');
-            return $stmt->excute([$id]);
+            return $stmt->execute([$id]);
         } catch (PDOException $e) {
             error_log('Error deleting user: ' . $e->getMessage());
             return false;
@@ -109,7 +109,7 @@ class UserRepository
     }
 
     // Check if email already exist
-    public function emailExist($email)
+    public function emailExists($email)
     {
         return $this->getUserByEmail($email) !== null;
     }
