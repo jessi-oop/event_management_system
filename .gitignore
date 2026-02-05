@@ -96,4 +96,4 @@ public/uploads/*
 *.p12
 *.pfx
 
-**/php-cs-fixer.dist.php
+**/.php-cs-fixer.dist.php
