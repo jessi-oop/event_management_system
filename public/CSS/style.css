@@ -51,6 +51,12 @@ body.register-body {
   border-radius: 5px;
 }
 
+.role-select {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
 .register-form-group input[type="submit"] {
   width: 100%;
   padding: 10px;

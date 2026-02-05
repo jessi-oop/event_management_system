@@ -8,9 +8,10 @@ $message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $email = $_POST['email'] ?? '';
+    $role = $_POST['role'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($auth->regsiter($username, $email, $password)) {
+    if ($auth->regsiter($username, $email, $role, $password)) {
         $message = "Registration successful.";
     } else {
         $message = "Registration failed. Email might already exist.";
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
-    <link rel="stylesheet" href="../CSS/style.css" />
+    <link rel="stylesheet" href="../public/css/style.css" />
   </head>
   <body class="register-body">
     <div class="register-container">
@@ -56,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="register-form-group">
+          <label class="labels" for="role">Role:</label>
+          <select class="role-select" name="role" id="role" required>
+            <option value="organizer">Organizer</option>
+            <option value="attendee">Attendee</option>
+          </select>
+        </div>
+
+        <div class="register-form-group">
           <label class="labels" for="password">Password:</label>
           <input
             class="inputs"
@@ -74,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="register-form-group">
           <p class="login-redirect">
             Already have an account?
-            <a href="login.html" target="_blank">Login</a>
+            <a href="login.php" target="_blank">Login</a>
           </p>
         </div>
       </form>

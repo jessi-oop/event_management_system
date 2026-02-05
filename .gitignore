@@ -95,3 +95,5 @@ public/uploads/*
 *.key
 *.p12
 *.pfx
+
+**/php-cs-fixer.dist.php
