@@ -47,6 +47,7 @@ class CategoryRepository
 
         } catch (PDOException $e) {
             error_log('Error getting category: ' . $e->getMessage());
+            return null;
         }
     }
 }
