@@ -1,6 +1,12 @@
 <?php
 
 session_start();
+// DEBUG: Show what's in session
+// echo "<pre>";
+// echo "Session Data:\n";
+// print_r($_SESSION);
+// echo "\n\nIs session started? " . (session_status() === PHP_SESSION_ACTIVE ? 'YES' : 'NO');
+// echo "\n</pre>";
 require_once __DIR__ . '/../app/Services/AuthService.php';
 
 $authService = new AuthService();
@@ -26,7 +32,11 @@ $user = $authService->getCurrentUser();
         
         <nav>
             <a href="../events/browse.php">Browse Events</a>
-            
+            <?php
+            var_dump($user);
+die();
+?>
+
             <?php if ($user->isOrganizer()): ?>
                 <a href="../events/create.php">Create Event</a>
             <?php endif; ?>

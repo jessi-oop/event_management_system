@@ -6,7 +6,7 @@ require_once __DIR__ . '/../app/Services/AuthService.php';
 $auth = new AuthService();
 
 if ($auth->isLoggedIn()) {
-    header('Location: ..dashboard/index.php');
+    header('Location: ../dashboard/index.php');
     exit;
 }
 

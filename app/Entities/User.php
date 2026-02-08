@@ -2,8 +2,8 @@
 
 class User
 {
-    public $id;
-    public $username;
+    public $user_id;
+    public $full_name;
     public $email;
     public $role;
     public $password_hash;
@@ -12,8 +12,8 @@ class User
     public function __construct($data = [])
     {
         if (!empty($data)) {
-            $this->id = $data['user_id'] ?? null;
-            $this->username = $data['username'] ?? null;
+            $this->user_id = $data['user_id'] ?? null;
+            $this->full_name = $data['full_name'] ?? null;
             $this->email = $data['email'] ?? null;
             $this->role = $data['role'] ?? null;
             $this->password_hash = $data['password_hash'] ?? null;
@@ -39,8 +39,8 @@ class User
     public function toArray()
     {
         return [
-            'id' => $this->id,
-            'username' => $this->username,
+            'id' => $this->user_id,
+            'full_name' => $this->full_name,
             'email' => $this->email,
             'role' => $this->role,
             'password' => $this->password_hash,

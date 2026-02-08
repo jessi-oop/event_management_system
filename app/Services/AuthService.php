@@ -12,9 +12,9 @@ class AuthService
     }
 
     // Register user
-    public function register($username, $email, $role, $password)
+    public function register($full_name, $email, $role, $password)
     {
-        $validate = $this->validateRegistration($username, $email, $role, $password); //validate inputted credentials
+        $validate = $this->validateRegistration($full_name, $email, $role, $password); //validate inputted credentials
         if (!$validate['valid']) {
             return ['success' => false, 'message' => $validate['message']];
         }
@@ -30,7 +30,7 @@ class AuthService
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT); //hasehes the password that was passed as an argument
 
-        $createUser = $this->userRepo->createUser($username, $email, $role, $passwordHash); //calls the function in the UserRepo file to create a new user
+        $createUser = $this->userRepo->createUser($full_name, $email, $role, $passwordHash); //calls the function in the UserRepo file to create a new user
         if ($createUser) {
             return ['success' => true, 'message' => 'Registration successfull.'];
         }
@@ -58,9 +58,10 @@ class AuthService
         }
 
         $_SESSION['user_id'] = $user->user_id;
-        $_SESSION['username'] = $user->username;
+        $_SESSION['full_name'] = $user->full_name;
         $_SESSION['email'] = $user->email;
         $_SESSION['role'] = $user->role;
+
 
         return ['success' => true, 'message' => 'Login successfull.', 'user' => $user];
     }
@@ -118,9 +119,9 @@ class AuthService
     }
 
     // validate credentials
-    public function validateRegistration($username, $email, $role, $password)
+    public function validateRegistration($full_name, $email, $role, $password)
     {
-        if (empty($username) || empty($email) || empty($role) || empty($password)) {
+        if (empty($full_name) || empty($email) || empty($role) || empty($password)) {
             return ['valid' => false, 'message' => 'All fields are required.'];
         }
 

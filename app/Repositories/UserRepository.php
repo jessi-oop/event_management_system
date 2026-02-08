@@ -13,13 +13,13 @@ class UserRepository
     }
 
     // Creates new user
-    public function createUser($username, $email, $role, $password_hashed)
+    public function createUser($full_name, $email, $role, $password_hashed)
     {
         try {
             // Prepares the query
-            $stmt = $this->db->prepare("INSERT INTO users (username, email, role, password_hash) VALUES (?, ?, ?, ?)");
+            $stmt = $this->db->prepare("INSERT INTO users (full_name, email, role, password_hash) VALUES (?, ?, ?, ?)");
             //Executes the query
-            $data = $stmt->execute([$username, $email, $role, $password_hashed]);
+            $data = $stmt->execute([$full_name, $email, $role, $password_hashed]);
             return $data;
         } catch (PDOException $e) {
             error_log('Error creating the user: ' . $e->getMessage());
@@ -50,11 +50,11 @@ class UserRepository
     }
 
     // Find user by ID
-    public function getUserById($id)
+    public function getUserById($user_id)
     {
         try {
             $stmt = $this->db->prepare('SELECT * FROM users WHERE user_id = ?');
-            $stmt = execute([$id]);
+            $stmt -> execute([$user_id]);
             $data = $stmt->fetch();
 
             if ($data) {
@@ -70,7 +70,7 @@ class UserRepository
     public function getAllUsers()
     {
         try {
-            $stmt = $this->db->query('SELECT user_id, username, email, role, created_at FROM users ORDER BY created_at DESC');
+            $stmt = $this->db->query('SELECT user_id, full_name, email, role, created_at FROM users ORDER BY created_at DESC');
             $users = []; //an array of associative arrays that will hold user data/user objet
 
             while ($data = $stmt->fetch()) { //fetch the returned value and store it into the users array
@@ -85,11 +85,11 @@ class UserRepository
     }
 
     // Update user info
-    public function updateUser($id, $username, $email)
+    public function updateUser($user_id, $full_name, $email)
     {
         try {
-            $stmt = $this->db->prepare('UPDATE users SET username = ?, email = ? WHERE user_id = ?');
-            return $stmt->execute([$username, $email, $id]);
+            $stmt = $this->db->prepare('UPDATE users SET full_name = ?, email = ? WHERE user_id = ?');
+            return $stmt->execute([$full_name, $email, $user_id]);
         } catch (PDOException $e) {
             error_log('Error updating user info: ' . $e->getMessage());
             return false;
@@ -97,11 +97,11 @@ class UserRepository
     }
 
     // Delete user
-    public function deleteUser($id)
+    public function deleteUser($user_id)
     {
         try {
             $stmt = $this->db->prepare('DELETE FROM users WHERE user_id = ?');
-            return $stmt->execute([$id]);
+            return $stmt->execute([$user_id]);
         } catch (PDOException $e) {
             error_log('Error deleting user: ' . $e->getMessage());
             return false;
