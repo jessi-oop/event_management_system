@@ -16,7 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    $result = $auth->login($email, $password);
+    if ($email === '' || $password === '') {
+        $message = 'Email and password is required.';
+        return;
+    } else {
+        $result = $auth->login($email, $password);
+    }
 
     if ($result['success']) {
         $user = $result['user'];
@@ -71,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             name="password"
             id="password"
             placeholder="Enter password"
-            value="<?= htmlspecialchars($_POST['password'] ?? '') ?>"
+            
             required
           />
         </div>

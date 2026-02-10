@@ -20,7 +20,7 @@ class AuthService
         }
 
         if ($this->userRepo->emailExists($email)) { //check if email is already registered to avoid duplication
-            return ['success', false, 'message' => 'Email already registered.' ];
+            return ['success' => false, 'message' => 'Email already registered.' ];
         }
 
         $allowedRoles = ['organizer', 'attendee'];
@@ -42,6 +42,9 @@ class AuthService
 
     public function login($email, $password)
     {
+        if ($email === '' || $password === '') {
+            return ['success' => false, 'message' => 'Invalid email or password.'];
+        }
         $user = $this->userRepo->getUserByEmail($email); //find user by email, return their whole info
 
         if (!$user) {
@@ -56,6 +59,8 @@ class AuthService
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        session_regenerate_id(true); //Generate a fresh session id after login
 
         $_SESSION['user_id'] = $user->user_id;
         $_SESSION['full_name'] = $user->full_name;
