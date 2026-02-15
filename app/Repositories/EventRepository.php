@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '../Core/Database/php';
-require_once __DIR__ . '../Entities/Event.php';
+require_once __DIR__ . '/../Core/Database.php';
+require_once __DIR__ . '/../Entities/Event.php';
 
 class EventRepository
 {
@@ -25,7 +25,7 @@ class EventRepository
     ) {
         try {
             $stmt = $this->db->prepare('INSERT INTO events 
-            (organizer_id, category_id, title, description, event_date
+            (organizer_id, category_id, title, description, event_date,
             event_time, location, capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)') ;
 
             $data = $stmt->execute([$organizer_id, $category_id, $title, $description, $event_date,
@@ -41,11 +41,11 @@ class EventRepository
         }
     }
 
-    //Used to get all the upcoming events
-    public function getAllUpcomingEvents()
+    // Get all events, past and future
+    public function getAllEvents()
     {
         try {
-            $stmt = $this->db->query('SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC, event_time ASC ');
+            $stmt = $this->db->query('SELECT * FROM event_summary ORDER BY event_date DESC, event_time DESC');
 
             $events = [];
             while ($data = $stmt->fetch()) {
@@ -53,7 +53,25 @@ class EventRepository
             }
 
             return $events;
-        } catch (PDOExcepion $e) {
+        } catch (PDOException $e) {
+            error_log('Error getting all events: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    //Used to get all the upcoming events
+    public function getAllUpcomingEvents()
+    {
+        try {
+            $stmt = $this->db->query('SELECT * FROM event_summary WHERE event_date >= CURDATE() ORDER BY event_date ASC, event_time ASC ');
+
+            $events = [];
+            while ($data = $stmt->fetch()) {
+                $events[] = new Event($data);
+            }
+
+            return $events;
+        } catch (PDOException $e) {
             error_log('Error getting upcoming events: ' . $e->getMessage());
             return [];
         }
@@ -71,6 +89,24 @@ class EventRepository
                 return new Event($data);
             }
 
+            return null;
+        } catch (PDOException $e) {
+            error_log('Error getting event: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    // Used to get events by organizer
+    public function getEventByOrganizer($organizer_id)
+    {
+        try {
+            $stmt = $this->db->prepare('SELECT * FROM event_summary WHERE organizer_id = ?');
+            $stmt->execute([$organizer_id]);
+            $data = $stmt->fetch();
+
+            if ($data) {
+                return new Event($data);
+            }
             return null;
         } catch (PDOException $e) {
             error_log('Error getting event: ' . $e->getMessage());
@@ -100,7 +136,7 @@ class EventRepository
             capacity = ? 
             WHERE event_id = ?');
 
-            $data = $stmt->execute([$category_id, $title, $description, $event_date, $event_time, $location, $capacity]);
+            $data = $stmt->execute([$category_id, $title, $description, $event_date, $event_time, $location, $capacity, $event_id]);
 
             return $data;
         } catch (PDOException $e) {
@@ -122,21 +158,5 @@ class EventRepository
         }
     }
 
-    // Used to get events by organizer
-    public function getEventByOrganizer($organizer_id)
-    {
-        try {
-            $stmt = $this->db->prepare('SELECT * FROM event_summary WHERE organizer_id = ?');
-            $stmt->execute([$organizer_id]);
-            $data = $stmt->fetch();
 
-            if ($data) {
-                return new Event($data);
-            }
-            return null;
-        } catch (PDOException $e) {
-            error_log('Error getting event: ' . $e->getMessage());
-            return null;
-        }
-    }
 }

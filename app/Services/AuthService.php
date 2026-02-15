@@ -4,11 +4,11 @@ require_once __DIR__ . '/../Repositories/UserRepository.php';
 
 class AuthService
 {
-    private $userRepo;
+    private $user_repo;
 
     public function __construct()
     {
-        $this->userRepo = new UserRepository(); //creates a new and local instance of the UserRepo class
+        $this->user_repo = new UserRepository(); //creates a new and local instance of the UserRepo class
     }
 
     // Register user
@@ -19,18 +19,18 @@ class AuthService
             return ['success' => false, 'message' => $validate['message']];
         }
 
-        if ($this->userRepo->emailExists($email)) { //check if email is already registered to avoid duplication
+        if ($this->user_repo->emailExists($email)) { //check if email is already registered to avoid duplication
             return ['success' => false, 'message' => 'Email already registered.' ];
         }
 
         $allowedRoles = ['organizer', 'attendee'];
-        if (!in_array($role, $allowedRoles)) { //check if the selected role is in the valid roles
+        if (!in_array($role, $allowedRoles, true)) { //check if the selected role is in the valid roles
             return ['success' => false, 'message' => 'Invalid role selected.'];
         }
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT); //hasehes the password that was passed as an argument
 
-        $createUser = $this->userRepo->createUser($full_name, $email, $role, $passwordHash); //calls the function in the UserRepo file to create a new user
+        $createUser = $this->user_repo->createUser($full_name, $email, $role, $passwordHash); //calls the function in the UserRepo file to create a new user
         if ($createUser) {
             return ['success' => true, 'message' => 'Registration successfull.'];
         }
@@ -45,7 +45,7 @@ class AuthService
         if ($email === '' || $password === '') {
             return ['success' => false, 'message' => 'Invalid email or password.'];
         }
-        $user = $this->userRepo->getUserByEmail($email); //find user by email, return their whole info
+        $user = $this->user_repo->getUserByEmail($email); //find user by email, return their whole info
 
         if (!$user) {
             return ['success' => false, 'message' => 'Invalid email or password.'];
@@ -99,7 +99,7 @@ class AuthService
             return null;
         }
 
-        return $this->userRepo->getUserById($_SESSION['user_id']);
+        return $this->user_repo->getUserById($_SESSION['user_id']);
     }
 
     //require login (redirect if not logged in)

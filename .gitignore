@@ -97,3 +97,5 @@ public/uploads/*
 *.pfx
 
 **/.php-cs-fixer.dist.php
+
+tests/

@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '../Core/Database.php';
-require_once __DIR__ . '../Entities/Categories.php';
+require_once __DIR__ . '/../Core/Database.php';
+require_once __DIR__ . '/../Entities/Category.php';
 
 
 class CategoryRepository
@@ -20,7 +20,7 @@ class CategoryRepository
 
             $categories = [];
             while ($data = $stmt->fetch()) {
-                $categories = new Category($data);
+                $categories[] = new Category($data);
             }
 
             return $categories;
@@ -29,6 +29,24 @@ class CategoryRepository
             error_log('Error getting categories: ' . $e->getMessage());
             return [];
         }
+    }
+
+    public function getAllCategoryIds()
+    {
+        try {
+            $stmt = $this->db->query("SELECT category_id FROM categories ORDER BY category_name ASC");
+
+            $category_ids = [];
+            while ($data = $stmt->fetch()) {
+                $category_ids[] = $data['category_id'];
+            }
+
+            return $category_ids;
+        } catch (PDOException $e) {
+            error_log('Error geting category ids: ' . $e->getMessage());
+            return [];
+        }
+
     }
 
     public function getCategoryById($category_id)

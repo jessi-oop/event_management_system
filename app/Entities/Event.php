@@ -1,6 +1,6 @@
 <?php
 
-class Events
+class Event
 {
     public $event_id;
     public $organizer_id;
@@ -18,7 +18,7 @@ class Events
     public $category_name;
     public $organizer_name;
     public $organizer_email;
-    public $registerd_count;
+    public $registered_count;
     public $available_spots;
 
     public function __construct($data = [])
@@ -33,12 +33,12 @@ class Events
         $this->location = $data['location'] ?? null;
         $this->capacity = $data['capacity'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
-        $this->updated_at = $datap['updated_at'] ?? null;
+        $this->updated_at = $data['updated_at'] ?? null;
 
         // if from views
         $this->category_name = $data['category_name'] ?? null;
         $this->organizer_name = $data['organizer_name'] ?? null;
-        $this->organizer_email = $data['organizer_name'] ?? null;
+        $this->organizer_email = $data['organizer_email'] ?? null;
         $this->registered_count = $data['registered_count'] ?? null;
         $this->available_spots = $data['available_spots'] ?? null;
     }
@@ -52,11 +52,11 @@ class Events
     // Check if an event is in the past
     public function isPastEvent()
     {
-        return strtotime($this-> event_date) < strtotime('today');
+        return strtotime($this->event_date) < strtotime('today');
     }
 
     // Check if user is the organizer of this event
-    public function isOrganizedBy($suer_id)
+    public function isOrganizedBy($user_id)
     {
         return $this->organizer_id == $user_id;
     }
@@ -64,7 +64,7 @@ class Events
     // Format date for display
     public function getFormattedDate()
     {
-        return date('F j, y', strtotime($this->event_date));
+        return date('F j, Y', strtotime($this->event_date));
     }
 
     // Format time for display
@@ -76,7 +76,7 @@ class Events
     // Get formatted date and time
     public function getFormattedDateAndTime()
     {
-        return $this->getFormattedDate() . 'at' . $this->getFormattedTime();
+        return $this->getFormattedDate() . ' at ' . $this->getFormattedTime();
     }
 
 }
