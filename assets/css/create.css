@@ -1,0 +1,253 @@
+/* ===================================
+   CREATE EVENT PAGE STYLES
+   =================================== */
+
+/* General */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #111827;
+  min-height: 100vh;
+  padding: 20px;
+  color: #f9fafb;
+}
+
+.sidebar-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Main Content */
+.main-content {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 30px;
+  color: #111827;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.page-title {
+  color: #111827;
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Form Container */
+.form-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Labels */
+.form-label {
+  color: #111827;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.95rem;
+  color: #111827;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #9ca3af;
+}
+
+/* Textarea specific */
+textarea.form-control {
+  resize: none;
+  min-height: 120px;
+}
+
+/* Form Select */
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select option {
+  padding: 0.5rem;
+}
+
+/* Date and Time inputs */
+input[type="date"],
+input[type="time"] {
+  cursor: pointer;
+}
+
+/* Number input */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.625rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:active {
+  background-color: #1e40af;
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+/* Required field indicator */
+.form-label::after {
+  content: " *";
+  color: #ef4444;
+}
+
+/* Invalid feedback */
+.invalid-feedback {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #ef4444;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+
+  .form-container {
+    padding: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Loading state (optional) */
+.btn.loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}

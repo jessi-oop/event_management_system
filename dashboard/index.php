@@ -1,52 +1,39 @@
-<?php
-
-session_start();
-// DEBUG: Show what's in session
-// echo "<pre>";
-// echo "Session Data:\n";
-// print_r($_SESSION);
-// echo "\n\nIs session started? " . (session_status() === PHP_SESSION_ACTIVE ? 'YES' : 'NO');
-// echo "\n</pre>";
-require_once __DIR__ . '/../app/Services/AuthService.php';
-
-$authService = new AuthService();
-$authService->requireLogin();
-
-$user = $authService->getCurrentUser();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Event Management System</title>
-    <link rel="stylesheet" href="../public/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Dashboard</h1>
-        <p>Welcome, <?= htmlspecialchars($user->username) ?>!</p>
-        <p>Email: <?= htmlspecialchars($user->email) ?></p>
-        <p>Role: <?= htmlspecialchars($user->role) ?></p>
-        
-        <nav>
-            <a href="../events/browse.php">Browse Events</a>
-            <?php
-            var_dump($user);
-die();
-?>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Management System</title>
 
-            <?php if ($user->isOrganizer()): ?>
-                <a href="../events/create.php">Create Event</a>
-            <?php endif; ?>
-            
-            <?php if ($user->isAdmin()): ?>
-                <a href="../admin/index.php">Admin Panel</a>
-            <?php endif; ?>
-            
-            <a href="../auth/logout.php">Logout</a>
-        </nav>
+    <!-- Bootstrap CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/../assets/css/dashboard.css" />
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-12 col-md-3 col-lg-2 sidebar">
+          <h4 class="sidebar-title">EMS</h4>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-9 col-lg-10 main-content">
+          <h2>Main Content Area</h2>
+          <p>This is where your pages will load.</p>
+        </div>
+
+      </div>
     </div>
-</body>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
