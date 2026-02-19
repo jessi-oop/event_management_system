@@ -1,24 +1,26 @@
 <?php
 
-require_once __DIR__ . '/../../app/Repositories/EventRepository/updateEvent.php';
-require_once __DIR__ . '/../../app/Repositories/EventRepository/getEventById.php';
-require_once __DIR__ . '/../../app//Repositories/CategoryRepository/getAllCategoryIds.php';
-require_once __DIR__ . '/../../Services/AuthService/getCurrentUser.php';
-require_once __DIR__ / '/validateEventDetails.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/updateEvent.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/getEventById.php';
+require_once __DIR__ . '/../../Repositories/CategoryRepository/getAllCategoryIds.php';
+require_once __DIR__ . '/../AuthService/getCurrentUser.php';
+require_once __DIR__ . '/validateEventDetails.php';
 
-class UpdateEvent {
+class UpdateEventService
+{
     private $update_event;
     private $get_event_by_id;
     private $get_all_category_ids;
     private $get_current_user;
     private $validate_event;
 
-    public function __construct(){
-        $this->update_event = new updateEvent();
-        $this->get_event_by_id = new getEventById();
-        $this->get_all_category_ids = new getAllCategoryIds();
-        $this->get_current_user = new getCurrentUser();
-        $this->validate_event = new validateEventDetails();
+    public function __construct()
+    {
+        $this->update_event = new UpdateEventRepo();
+        $this->get_event_by_id = new GetEventById();
+        $this->get_all_category_ids = new GetAllCategoryIds();
+        $this->get_current_user = new GetCurrentUser();
+        $this->validate_event = new ValidateEventDetails();
     }
 
     public function updateEvent(
@@ -46,7 +48,7 @@ class UpdateEvent {
             return ['success' => false, 'message' => 'Event id is required to update events.'];
         }
 
-        $validate = $this->validte_event->validateEventDetails(
+        $validate = $this->validate_event->validateEventDetails(
             $event_id,
             $category_id,
             $title,

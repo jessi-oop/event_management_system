@@ -1,11 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../../app/Repositories/EventRepository/createEvent.php';
-require_once __DIR__ . '/../../app//Repositories/CategoryRepository/getAllCategoryIds.php';
-require_once __DIR__ . '/../../Services/AuthService/getCurrentUser.php';
-require_once __DIR__ / '/validateEventDetails.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/createEvent.php';
+require_once __DIR__ . '/../../Repositories/CategoryRepository/getAllCategoryIds.php';
+require_once __DIR__ . '/../AuthService/getCurrentUser.php';
+require_once __DIR__ . '/validateEventDetails.php';
 
-class CreateEvent {
+class CreateEventService
+{
     private $create_event;
     private $get_category_ids;
     private $get_current_user;
@@ -13,10 +14,10 @@ class CreateEvent {
 
     public function __construct()
     {
-        $this->create_event = new createEvent();
-        $this->get_category_ids = new getAllCategoryIds();
-        $this->get_current_user = new getCurrentUser();
-        $this->validate_event_details = new validateEventDetails();
+        $this->create_event = new CreateEventRepo();
+        $this->get_category_ids = new GetAllCategoryIds();
+        $this->get_current_user = new GetCurrentUser();
+        $this->validate_event_details = new ValidateEventDetails();
     }
 
     public function createEvent(

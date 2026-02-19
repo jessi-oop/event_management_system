@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Event.php';
 
-class GetAllUpcomingEvents {
+class GetAllUpcomingEventsRepo
+{
     private $db;
 
     public function __construct()
@@ -11,7 +12,7 @@ class GetAllUpcomingEvents {
         $this->db = Database::getInstance()->getConnection();
     }
 
-     //Used to get all the upcoming events
+    //Used to get all the upcoming events
     public function getAllUpcomingEvents()
     {
         try {

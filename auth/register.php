@@ -1,24 +1,25 @@
 <?php
 session_start();
-require_once __DIR__ . '/../app/Core/Database.php';
-require_once __DIR__ . '/../app/Services/AuthService.php';
+require_once __DIR__ . '/../app/Services/AuthService/isLoggedIn.php';
+require_once __DIR__ . '/../app/Services/AuthService/register.php';
 
-$auth = new AuthService();
+$is_logged_in = new IsLoggedIn();
+$register = new Register();
 $message = '';
 $message_type = '';
 
-if ($auth->isLoggedIn()) {
+if ($is_logged_in->isLoggedIn()) {
     header('Location: dashboard/index.php');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $full_name = trim($_POST['fullname'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $role = $_POST['role'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    $result = $auth->register($username, $email, $role, $password);
+    $result = $register->register($full_name, $email, $role, $password);
 
     $message = $result['message'];
     $message_type = $result['success'] ? 'sucess' : 'error';
@@ -32,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
-    <link rel="stylesheet" href="../public/css/style.css" />
+    <link rel="stylesheet" href="../assets/css/register.css" />
   </head>
   <body class="register-body">
     <div class="register-container">
@@ -51,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <form method="POST" action="register.php">
         <div class="register-form-group">
-          <label class="labels" for="username">Username: </label>
+          <label class="labels" for="fullname">Fullname: </label>
           <input
             class="inputs"
             type="text"
-            id="username"
-            name="username"
-            placeholder="Enter username"
-            value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
+            id="fullname"
+            name="fullname"
+            placeholder="Enter fullname"
+            value="<?= htmlspecialchars($_POST['fullname'] ?? '') ?>"
             required
           />
         </div>

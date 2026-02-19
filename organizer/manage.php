@@ -15,8 +15,7 @@
       rel="stylesheet"
     />
     <!-- External CSS -->
-    <link rel="stylesheet" href="/../assets/css/dashboard.css" />
-    <link rel="stylesheet" href="/../assets/css/manage.css" />
+    <link rel="stylesheet" href="../assets/css/manage.css" />
   </head>
   <body>
     <div class="container-fluid"> <!-- OPEN: container-fluid -->
@@ -39,13 +38,13 @@
             //   header('Location: browse.php');
             //   exit();
             // }
-            
+
             // Get organizer ID from session
             // $organizer_id = $_SESSION['user_id'];
-            
+
             // Fetch events created by this organizer
             // $events = fetch_events_by_organizer($organizer_id);
-            
+
             // Sample events data - replace with database fetch
             $events = [
               [
@@ -104,10 +103,10 @@
                 'status' => 'upcoming'
               ],
             ];
-            
+
             // Calculate statistics
             $total_events = count($events);
-            $upcoming_events = count(array_filter($events, fn($e) => $e['status'] === 'upcoming'));
+            $upcoming_events = count(array_filter($events, fn ($e) => $e['status'] === 'upcoming'));
             $total_registrations = array_sum(array_column($events, 'registered'));
             ?>
 
@@ -220,32 +219,32 @@
                   </thead> <!-- CLOSE: thead -->
                   <tbody> <!-- OPEN: tbody -->
                     
-                    <?php foreach ($events as $event): 
-                      // Format date and time
-                      $formatted_date = date('M d, Y', strtotime($event['event_date']));
-                      $formatted_time = date('g:i A', strtotime($event['event_time']));
-                      
-                      // Determine status badge
-                      $status_class = '';
-                      $status_text = '';
-                      switch($event['status']) {
-                        case 'upcoming':
-                          $status_class = 'status-upcoming';
-                          $status_text = 'Upcoming';
-                          break;
-                        case 'full':
-                          $status_class = 'status-full';
-                          $status_text = 'Full';
-                          break;
-                        case 'past':
-                          $status_class = 'status-past';
-                          $status_text = 'Past';
-                          break;
-                      }
-                      
-                      // Calculate fill percentage
-                      $fill_percentage = ($event['registered'] / $event['capacity']) * 100;
-                    ?>
+                    <?php foreach ($events as $event):
+                        // Format date and time
+                        $formatted_date = date('M d, Y', strtotime($event['event_date']));
+                        $formatted_time = date('g:i A', strtotime($event['event_time']));
+
+                        // Determine status badge
+                        $status_class = '';
+                        $status_text = '';
+                        switch ($event['status']) {
+                            case 'upcoming':
+                                $status_class = 'status-upcoming';
+                                $status_text = 'Upcoming';
+                                break;
+                            case 'full':
+                                $status_class = 'status-full';
+                                $status_text = 'Full';
+                                break;
+                            case 'past':
+                                $status_class = 'status-past';
+                                $status_text = 'Past';
+                                break;
+                        }
+
+                        // Calculate fill percentage
+                        $fill_percentage = ($event['registered'] / $event['capacity']) * 100;
+                        ?>
                     
                     <tr data-category="<?php echo $event['category']; ?>" data-status="<?php echo $event['status']; ?>"> <!-- OPEN: event row -->
                       

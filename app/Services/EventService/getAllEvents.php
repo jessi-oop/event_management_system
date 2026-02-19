@@ -1,16 +1,18 @@
 <?php
 
-require_once __DIR__ . '/../../app/Repositories/EventRepository/getAllEvents.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/getAllEvents.php';
 
-class GetAllEvents {
+class GetAllEventsService
+{
     private $get_all_events;
 
-    public function __construct(){
-        $this->get_all_events = new getAllEvents();
+    public function __construct()
+    {
+        $this->get_all_events = new GetAllEventsRepo();
     }
 
     public function getAllEvents()
     {
-        return $this->event_repo->getAllEvents();
+        return $this->get_all_events->getAllEvents();
     }
 }

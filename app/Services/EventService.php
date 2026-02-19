@@ -17,16 +17,4 @@ class EventService
         $this->auth = new AuthService();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
 }

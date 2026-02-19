@@ -1,18 +1,20 @@
 <?php
 
-require_once __DIR__ . '/../../app/Repositories/EventRepository/deleteEvent.php';
-require_once __DIR__ . '/../../app/Repositories/EventRepository/getEventById.php';
-require_once __DIR__ . '/../../Services/AuthService/getCurrentUser.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/deleteEvent.php';
+require_once __DIR__ . '/../../Repositories/EventRepository/getEventById.php';
+require_once __DIR__ . '/../AuthService/getCurrentUser.php';
 
-class DeleteEvent {
+class DeleteEventService
+{
     private $delete_event;
     private $get_event_by_id;
     private $get_current_user;
 
-    public function __construct(){
-        $this->delete_event =  new deleteEvent();
-        $this->get_event_by_id = new getEventById();
-        $this->get_current_user = new getCurrentUser();
+    public function __construct()
+    {
+        $this->delete_event =  new DeleteEventRepo();
+        $this->get_event_by_id = new GetEventById();
+        $this->get_current_user = new GetCurrentUser();
     }
 
     public function deleteEvent($event_id)

@@ -4,15 +4,16 @@ require_once __DIR__ . '/../../Repositories/UserRepository/createUser.php';
 require_once __DIR__ . '/../../Repositories/UserRepository/emailExists.php';
 require_once __DIR__ . '/validateRegistration.php';
 
-class Register {
-     private $creater_user;
-     private $email_exists;
-     private $validate_registration;
+class Register
+{
+    private $creater_user;
+    private $email_exists;
+    private $validate_registration;
 
     public function __construct()
     {
         $this->creater_user = new createUser(); //creates a new and local instance of the UserRepo class
-        $this->email_exists = new emailExists();
+        $this->email_exists = new EmailExists();
         $this->validate_registration = new validateRegistration();
     }
 

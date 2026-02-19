@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Event.php';
 
-class UpdateEvent {
+class UpdateEventRepo
+{
     private $db;
 
     public function __construct()
