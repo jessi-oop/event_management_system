@@ -1,3 +1,29 @@
+<?php
+session_start();
+
+require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
+require_once __DIR__ . '/../app/Services/EventService/getEventByOrganizer.php';
+require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+
+$get_event_by_organizer = new GetEventByOrganizerService();
+$get_all_categories = new GetAllCategoriesService();
+$require_role = new RequireRole();
+
+$require_role->requireRole('organizer');
+
+$organizer_id = $_SESSION['user_id'];
+$organized_events = $get_event_by_organizer->getEventByOrganizer($organizer_id);
+
+$categories = $get_all_categories->getAllCategories();
+
+
+$search = $_GET['search'] ?? '';
+$status = $_GET['status'] ?? 'all';
+$event_id = $_GET['event_id'] ?? '';
+$category_id = $_GET['category_id'] ?? '';
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,83 +58,11 @@
           <div class="content-wrapper w-100"> <!-- OPEN: content-wrapper -->
             
             <?php
-            // Check if user is an organizer
-            // session_start();
-            // if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'organizer') {
-            //   header('Location: browse.php');
-            //   exit();
-            // }
-
-            // Get organizer ID from session
-            // $organizer_id = $_SESSION['user_id'];
-
-            // Fetch events created by this organizer
-            // $events = fetch_events_by_organizer($organizer_id);
-
-            // Sample events data - replace with database fetch
-            $events = [
-              [
-                'id' => 1,
-                'title' => 'Annual Tech Conference 2024',
-                'category' => 'Conference',
-                'event_date' => '2024-03-15',
-                'event_time' => '09:00',
-                'location' => 'Convention Center, New York',
-                'capacity' => 500,
-                'registered' => 342,
-                'status' => 'upcoming'
-              ],
-              [
-                'id' => 2,
-                'title' => 'Web Development Workshop',
-                'category' => 'Workshop',
-                'event_date' => '2024-03-20',
-                'event_time' => '14:00',
-                'location' => 'Tech Hub, San Francisco',
-                'capacity' => 50,
-                'registered' => 50,
-                'status' => 'full'
-              ],
-              [
-                'id' => 3,
-                'title' => 'Digital Marketing Seminar',
-                'category' => 'Seminar',
-                'event_date' => '2024-02-10',
-                'event_time' => '10:30',
-                'location' => 'Business Center, Chicago',
-                'capacity' => 100,
-                'registered' => 87,
-                'status' => 'past'
-              ],
-              [
-                'id' => 4,
-                'title' => 'AI and Machine Learning Webinar',
-                'category' => 'Webinar',
-                'event_date' => '2024-04-05',
-                'event_time' => '16:00',
-                'location' => 'Online Event',
-                'capacity' => 200,
-                'registered' => 145,
-                'status' => 'upcoming'
-              ],
-              [
-                'id' => 5,
-                'title' => 'Startup Networking Night',
-                'category' => 'Networking',
-                'event_date' => '2024-04-10',
-                'event_time' => '18:00',
-                'location' => 'Innovation Hub, Austin',
-                'capacity' => 80,
-                'registered' => 12,
-                'status' => 'upcoming'
-              ],
-            ];
-
             // Calculate statistics
-            $total_events = count($events);
-            $upcoming_events = count(array_filter($events, fn ($e) => $e['status'] === 'upcoming'));
-            $total_registrations = array_sum(array_column($events, 'registered'));
-            ?>
+            $total_events = count($organized_events);
+$upcoming_events = count(array_filter($organized_events, fn ($e) => $e->status === 'upcoming'));
+$total_registrations = array_sum(array_map(fn ($e) =>  $e->registered_count, $organized_events));
+?>
 
             <!-- Page Header -->
             <div class="page-header"> <!-- OPEN: page-header -->
@@ -118,7 +72,7 @@
                   <p class="page-subtitle">Manage your created events</p>
                 </div> <!-- CLOSE: header-text -->
                 <div class="header-actions"> <!-- OPEN: header-actions -->
-                  <a href="create.php" class="btn btn-primary">
+                  <a href="/Event-Management-System/events/create.php" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New Event
                   </a>
                 </div> <!-- CLOSE: header-actions -->
@@ -183,12 +137,15 @@
                 <div class="col-md-3"> <!-- OPEN: category col -->
                   <select class="form-select" id="categoryFilter">
                     <option value="">All Categories</option>
-                    <option value="Conference">Conference</option>
-                    <option value="Workshop">Workshop</option>
-                    <option value="Seminar">Seminar</option>
-                    <option value="Webinar">Webinar</option>
-                    <option value="Networking">Networking</option>
-                    <option value="Training">Training</option>
+                    <?php if (empty($categories)): ?>
+                      <option value="">No categories available.</option>
+                    <?php else: ?>
+                      <?php foreach ($categories as $category): ?>
+                      <option value="<?= htmlspecialchars($category->category_id)?>">
+                        <?= htmlspecialchars($category->category_name)?>
+                      </option>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
                   </select>
                 </div> <!-- CLOSE: category col -->
                 <div class="col-md-3"> <!-- OPEN: status col -->
@@ -219,15 +176,15 @@
                   </thead> <!-- CLOSE: thead -->
                   <tbody> <!-- OPEN: tbody -->
                     
-                    <?php foreach ($events as $event):
+                    <?php foreach ($organized_events as $event):
                         // Format date and time
-                        $formatted_date = date('M d, Y', strtotime($event['event_date']));
-                        $formatted_time = date('g:i A', strtotime($event['event_time']));
+                        $formatted_date = date('M d, Y', strtotime($event->event_date));
+                        $formatted_time = date('g:i A', strtotime($event->event_time));
 
                         // Determine status badge
                         $status_class = '';
                         $status_text = '';
-                        switch ($event['status']) {
+                        switch ($event->status) {
                             case 'upcoming':
                                 $status_class = 'status-upcoming';
                                 $status_text = 'Upcoming';
@@ -243,15 +200,15 @@
                         }
 
                         // Calculate fill percentage
-                        $fill_percentage = ($event['registered'] / $event['capacity']) * 100;
+                        $fill_percentage = ($event->registered_count / $event->capacity) * 100;
                         ?>
                     
-                    <tr data-category="<?php echo $event['category']; ?>" data-status="<?php echo $event['status']; ?>"> <!-- OPEN: event row -->
+                    <tr data-category="<?php echo $event->category_id; ?>" data-status="<?php echo $event->status; ?>"> <!-- OPEN: event row -->
                       
                       <!-- Event Title -->
                       <td class="event-title-cell"> <!-- OPEN+CLOSE: td -->
-                        <a href="details.php?event_id=<?php echo $event['id']; ?>" class="event-link">
-                          <?php echo $event['title']; ?>
+                        <a href="/Event-Management-System/events/details.php?event_id=<?php echo $event->event_id; ?>" class="event-link">
+                          <?php echo $event->title; ?>
                         </a>
                       </td>
                       
@@ -271,20 +228,20 @@
                       
                       <!-- Category -->
                       <td> <!-- OPEN+CLOSE: td -->
-                        <span class="category-badge"><?php echo $event['category']; ?></span>
+                        <span class="category-badge"><?php echo $event->category_name; ?></span>
                       </td>
                       
                       <!-- Location -->
                       <td class="location-cell"> <!-- OPEN+CLOSE: td -->
                         <i class="bi bi-geo-alt"></i>
-                        <?php echo $event['location']; ?>
+                        <?php echo $event->location; ?>
                       </td>
                       
                       <!-- Capacity -->
                       <td> <!-- OPEN+CLOSE: td -->
                         <div class="capacity-cell">
                           <div class="capacity-text">
-                            <strong><?php echo $event['registered']; ?></strong> / <?php echo $event['capacity']; ?>
+                            <strong><?php echo $event->registered_count; ?></strong> / <?php echo $event->capacity; ?>
                           </div>
                           <div class="capacity-bar">
                             <div class="capacity-fill" style="width: <?php echo $fill_percentage; ?>%"></div>
@@ -302,19 +259,19 @@
                       <!-- Actions -->
                       <td> <!-- OPEN+CLOSE: td -->
                         <div class="action-buttons">
-                          <a href="details.php?event_id=<?php echo $event['id']; ?>" 
+                          <a href="/Event-Management-System/events/details.php?event_id=<?php echo $event->event_id; ?>" 
                              class="btn-action btn-view" 
                              title="View Details">
                             <i class="bi bi-eye"></i>
                           </a>
-                          <a href="edit.php?event_id=<?php echo $event['id']; ?>" 
+                          <a href="/Event-Management-System/events/edit.php?event_id=<?php echo $event->event_id; ?>" 
                              class="btn-action btn-edit" 
                              title="Edit Event">
                             <i class="bi bi-pencil"></i>
                           </a>
                           <button class="btn-action btn-delete" 
                                   title="Delete Event"
-                                  onclick="confirmDelete(<?php echo $event['id']; ?>, '<?php echo addslashes($event['title']); ?>')">
+                                  onclick="confirmDelete(<?php echo $event->event_id; ?>, '<?php echo addslashes($event->title); ?>')">
                             <i class="bi bi-trash"></i>
                           </button>
                         </div>
@@ -388,7 +345,7 @@
       const noResults = document.getElementById('noResults');
       
       function filterTable() {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = searchInput.value.toLowerCase().trim();
         const categoryValue = categoryFilter.value;
         const statusValue = statusFilter.value;
         let visibleCount = 0;
@@ -396,8 +353,8 @@
         tableRows.forEach(row => {
           const title = row.querySelector('.event-title-cell').textContent.toLowerCase();
           const location = row.querySelector('.location-cell').textContent.toLowerCase();
-          const category = row.getAttribute('data-category');
-          const status = row.getAttribute('data-status');
+          const category = row.getAttribute('data-category') || '';
+          const status = row.getAttribute('data-status') || '';
           
           const matchesSearch = title.includes(searchTerm) || location.includes(searchTerm);
           const matchesCategory = !categoryValue || category === categoryValue;

@@ -2,10 +2,12 @@
 
 require_once __DIR__ . '/../../Repositories/UserRepository/getUserByEmail.php';
 
-class Login {
+class Login
+{
     private $get_user_by_email;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->get_user_by_email = new getUserByEmail();
     }
 
@@ -35,7 +37,6 @@ class Login {
         $_SESSION['full_name'] = $user->full_name;
         $_SESSION['email'] = $user->email;
         $_SESSION['role'] = $user->role;
-
 
         return ['success' => true, 'message' => 'Login successfull.', 'user' => $user];
     }

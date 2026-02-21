@@ -1,3 +1,61 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header: 'Location: /Event-Management-System/auth/login.php';
+    exit;
+}
+
+require_once __DIR__ . '/../app/Services/EventService/validateEventDetails.php';
+require_once __DIR__ . '/../app/Entities/User.php';
+require_once __DIR__ . '/../app/Services/EventService/createEvent.php';
+require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+
+
+// if ()
+
+$validate_event_details = new ValidateEventDetails();
+$create_event = new CreateEventService();
+$user = new User();
+$category_service = new GetAllCategoriesService();
+
+$message = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = trim($_POST['title'] ?? '');
+    $category_id = intval($_POST['category_id'] ?? 0);
+    $description = trim($_POST['description'] ?? '');
+    $event_date = $_POST['event_date'] ?? '';
+    $event_time = $_POST['event_time'] ?? '';
+    $location = trim($_POST['location'] ?? '');
+    $capacity = intval($_POST['capacity'] ?? 0);
+
+
+    $event_created = $create_event->createEvent(
+        $category_id,
+        $title,
+        $description,
+        $event_date,
+        $event_time,
+        $location,
+        $capacity
+    );
+
+    echo "<pre>";
+    echo "Event created result: ";
+    var_dump($event_created);
+    echo "</pre>";
+
+    $message = $event_created['message'];
+}
+
+$categories = $category_service->getAllCategories();
+
+if (!$categories) {
+    $message = "Failed to retrieve categories.";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,7 +68,7 @@
       rel="stylesheet"
     />
     <!-- External CSS -->
-    <link rel="stylesheet" href="/../assets/css/create.css" />
+    <link rel="stylesheet" href="/Event-Management-System/assets/css/create.css" />
 
     <!-- Bootstrap JS -->
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -41,7 +99,7 @@
 
             <!-- Event Creation Form -->
             <div class="form-container">
-              <form action="process_create.php" method="POST" id="createEventForm">
+              <form action="create.php" method="POST" id="createEventForm">
                 
                 <!-- Event Title -->
                 <div class="mb-4">
@@ -62,20 +120,16 @@
                   <select class="form-select" id="category_id" name="category_id" required>
                     <option value="" selected disabled>Select a category</option>
                     <!-- PHP: Loop through categories from database -->
-                    <?php
-                    // Example categories - replace with database fetch
-                    // $categories = fetch_categories_from_db();
-                    // foreach($categories as $category) {
-                    //   echo "<option value='{$category['id']}'>{$category['name']}</option>";
-                    // }
-                    ?>
-                    <!-- Placeholder options -->
-                    <option value="1">Conference</option>
-                    <option value="2">Workshop</option>
-                    <option value="3">Seminar</option>
-                    <option value="4">Webinar</option>
-                    <option value="5">Networking</option>
-                    <option value="6">Training</option>
+                    <?php if (empty($categories)): ?>
+                      <option value="">No categories available</option>
+                    <?php else: ?>
+                    <?php foreach ($categories as $category): ?>
+                      <option value="<?= htmlspecialchars($category->category_id)?>">
+                        <?= htmlspecialchars($category->category_name)?>
+                      </option>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+              
                   </select>
                 </div>
 

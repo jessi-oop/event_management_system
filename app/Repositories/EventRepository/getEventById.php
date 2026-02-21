@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Event.php';
 
-class GetEventById {
+class GetEventByIdRepo
+{
     private $db;
 
     public function __construct()
@@ -15,7 +16,7 @@ class GetEventById {
     public function getEventById($event_id)
     {
         try {
-            $stmt = $this->db->prepare('SELECT * FROM events WHERE event_id = ?');
+            $stmt = $this->db->prepare('SELECT * FROM event_summary WHERE event_id = ?');
             $stmt->execute([$event_id]);
             $data = $stmt->fetch();
 

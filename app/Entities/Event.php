@@ -11,6 +11,7 @@ class Event
     public $event_time;
     public $location;
     public $capacity;
+    public $status;
     public $created_at;
     public $updated_at;
 
@@ -32,6 +33,7 @@ class Event
         $this->event_time = $data['event_time'] ?? null;
         $this->location = $data['location'] ?? null;
         $this->capacity = $data['capacity'] ?? null;
+        $this->status = $data['status'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
 
@@ -70,7 +72,7 @@ class Event
     // Format time for display
     public function getFormattedTime()
     {
-        return date('g: i A', strtotime($this->event_time));
+        return date('g:i A', strtotime($this->event_time));
     }
 
     // Get formatted date and time

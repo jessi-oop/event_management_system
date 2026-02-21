@@ -15,7 +15,7 @@ class CreateEventService
     public function __construct()
     {
         $this->create_event = new CreateEventRepo();
-        $this->get_category_ids = new GetAllCategoryIds();
+        $this->get_category_ids = new GetAllCategoryIdsRepo();
         $this->get_current_user = new GetCurrentUser();
         $this->validate_event_details = new ValidateEventDetails();
     }
@@ -29,6 +29,8 @@ class CreateEventService
         $location,
         $capacity
     ) {
+
+        $category_id = (int)$category_id;
 
         $current_user = $this->get_current_user->getCurrentUser();
         if (!$current_user) {

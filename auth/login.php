@@ -1,17 +1,13 @@
 <?php
 
 session_start();
-require_once __DIR__ . '/../app/Services/AuthService/isLoggedIn.php';
+require_once __DIR__ . '/../app/Services/AuthService/requireGuest.php';
 require_once __DIR__ . '/../app/Services/AuthService/login.php';
 
-$is_logged_in = new IsLoggedIn();
+$require_guest = new RequireGuest();
 $login = new Login();
 
-if ($is_logged_in->isLoggedIn()) {
-    header('Location: ../dashboard/index.php');
-    exit;
-}
-
+$require_guest->requireGuest();
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,22 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($email === '' || $password === '') {
         $message = 'Email and password is required.';
-        return;
     } else {
         $result = $login->login($email, $password);
-    }
 
-    if ($result['success']) {
-        $user = $result['user'];
-        if ($user->isAdmin()) {
-
-            header('Location: /Event-Management-System/admin/index.php');
+        if ($result['success']) {
+            $user = $result['user'];
+            if ($user->isAdmin()) {
+                header('Location: /Event-Management-System/admin/index.php');
+            } elseif ($user->isOrganizer()) {
+                header('Location: /Event-Management-System/organizer/manage.php');
+            } else {
+                header('Location: /Event-Management-System/dashboard/index.php');
+            }
+            exit;
         } else {
-            header('Location: /Event-Management-System/organizer/manage.php');
+            $message = $result['message'];
         }
-        exit;
-    } else {
-        $message = $result['message'];
     }
 }
 ?>

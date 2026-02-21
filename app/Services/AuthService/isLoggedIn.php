@@ -1,6 +1,7 @@
 <?php
 
-class IsLoggedIn {
+class IsLoggedIn
+{
     // check if user is logged in
     public function isLoggedIn()
     {

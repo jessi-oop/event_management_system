@@ -1,3 +1,17 @@
+<?php
+
+require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
+require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
+
+$get_event_by_id = new GetEventByIdService();
+$require_login = new RequireLogin();
+
+$require_login->requireLogin();
+
+$event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
+$event = $get_event_by_id->getEventById($event_id);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,8 +29,8 @@
       rel="stylesheet"
     />
     <!-- External CSS -->
-    <link rel="stylesheet" href="/../assets/css/dashboard.css" />
-    <link rel="stylesheet" href="/../assets/css/details.css" />
+    <link rel="stylesheet" href="../assets/css/dashboard.css" />
+    <link rel="stylesheet" href="../assets/css/details.css" />
   </head>
   <body>
     <div class="container-fluid"> <!-- OPEN: container-fluid -->
@@ -33,46 +47,18 @@
           <div class="content-wrapper w-100"> <!-- OPEN: content-wrapper -->
             
             <?php
-            // Get event ID from URL
-            $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
-
-            // Fetch event from database
-            // $event = fetch_event_by_id($event_id);
-
-            // Sample event data - replace with database fetch
-            $event = [
-              'id' => 1,
-              'title' => 'Annual Tech Conference 2024',
-              'category' => 'Conference',
-              'category_id' => 1,
-              'description' => 'Join us for the biggest technology conference of the year. This premier event brings together industry leaders, innovators, and technology enthusiasts from around the world. 
-              
-              Our conference features keynote presentations from CEOs of leading tech companies, deep-dive technical workshops, panel discussions on emerging technologies, and unparalleled networking opportunities. 
-              
-              Topics covered include: Artificial Intelligence and Machine Learning, Cloud Computing and DevOps, Cybersecurity Best Practices, Web3 and Blockchain Technology, Mobile Development Trends, and much more.
-              
-              Whether you\'re a seasoned professional or just starting your tech journey, this conference offers valuable insights, practical knowledge, and the chance to connect with like-minded individuals who are shaping the future of technology.',
-              'event_date' => '2024-03-15',
-              'event_time' => '09:00',
-              'location' => 'Convention Center, New York',
-              'capacity' => 500,
-              'registered' => 342, // Current registrations
-              'organizer' => 'Tech Events Inc.',
-              'contact_email' => 'info@techevents.com',
-              'contact_phone' => '+1 (555) 123-4567'
-            ];
 
             // Calculate available slots
-            $available_slots = $event['capacity'] - $event['registered'];
-            $fill_percentage = ($event['registered'] / $event['capacity']) * 100;
+            $available_slots = $event->available_spots;
+$fill_percentage = ($event->registered_count / $event->capacity) * 100;
 
-            // Format date and time
-            $formatted_date = date('l, F d, Y', strtotime($event['event_date']));
-            $formatted_time = date('g:i A', strtotime($event['event_time']));
+// Format date and time
+$formatted_date = date('l, F d, Y', strtotime($event->event_date));
+$formatted_time = date('g:i A', strtotime($event->event_time));
 
-            // Check if event is full
-            $is_full = $available_slots <= 0;
-            ?>
+// Check if event is full
+$is_full = $available_slots <= 0;
+?>
 
             <!-- Back Button -->
             <div class="back-nav mb-3"> <!-- OPEN: back-nav -->
@@ -87,14 +73,14 @@
               <!-- Event Header -->
               <div class="event-header"> <!-- OPEN: event-header -->
                 <div class="header-top"> <!-- OPEN: header-top -->
-                  <span class="category-badge"><?php echo $event['category']; ?></span>
+                  <span class="category-badge"><?php echo $event->category_name; ?></span>
                   <?php if ($is_full): ?>
                     <span class="status-badge full">Event Full</span>
                   <?php elseif ($available_slots <= 20): ?>
                     <span class="status-badge limited">Limited Slots</span>
                   <?php endif; ?>
                 </div> <!-- CLOSE: header-top -->
-                <h1 class="event-title"><?php echo $event['title']; ?></h1>
+                <h1 class="event-title"><?php echo $event->title; ?></h1>
               </div> <!-- CLOSE: event-header -->
 
               <!-- Event Info Grid -->
@@ -134,7 +120,7 @@
                     </div> <!-- CLOSE: info-icon -->
                     <div class="info-content"> <!-- OPEN: info-content -->
                       <div class="info-label">Location</div>
-                      <div class="info-value"><?php echo $event['location']; ?></div>
+                      <div class="info-value"><?php echo $event->location; ?></div>
                     </div> <!-- CLOSE: info-content -->
                   </div> <!-- CLOSE: info-card -->
                 </div> <!-- CLOSE: location col -->
@@ -147,7 +133,7 @@
                     </div> <!-- CLOSE: info-icon -->
                     <div class="info-content"> <!-- OPEN: info-content -->
                       <div class="info-label">Availability</div>
-                      <div class="info-value"><?php echo $available_slots; ?> / <?php echo $event['capacity']; ?></div>
+                      <div class="info-value"><?php echo $available_slots; ?> / <?php echo $event->capacity; ?></div>
                     </div> <!-- CLOSE: info-content -->
                   </div> <!-- CLOSE: info-card -->
                 </div> <!-- CLOSE: capacity col -->
@@ -176,7 +162,7 @@
               <div class="description-section"> <!-- OPEN: description-section -->
                 <h3 class="section-title">About This Event</h3>
                 <div class="description-content"> <!-- OPEN: description-content -->
-                  <?php echo nl2br($event['description']); ?>
+                  <?php echo nl2br($event->description); ?>
                 </div> <!-- CLOSE: description-content -->
               </div> <!-- CLOSE: description-section -->
 
@@ -186,15 +172,11 @@
                 <div class="organizer-content"> <!-- OPEN: organizer-content -->
                   <div class="organizer-item"> <!-- OPEN+CLOSE: organizer-item -->
                     <i class="bi bi-building"></i>
-                    <span><?php echo $event['organizer']; ?></span>
+                    <span><?php echo $event->organizer_name; ?></span>
                   </div>
                   <div class="organizer-item"> <!-- OPEN+CLOSE: organizer-item -->
                     <i class="bi bi-envelope"></i>
-                    <a href="mailto:<?php echo $event['contact_email']; ?>"><?php echo $event['contact_email']; ?></a>
-                  </div>
-                  <div class="organizer-item"> <!-- OPEN+CLOSE: organizer-item -->
-                    <i class="bi bi-telephone"></i>
-                    <a href="tel:<?php echo $event['contact_phone']; ?>"><?php echo $event['contact_phone']; ?></a>
+                    <a href="mailto:<?php echo $event->organizer_email; ?>"><?php echo $event->organizer_email; ?></a>
                   </div>
                 </div> <!-- CLOSE: organizer-content -->
               </div> <!-- CLOSE: organizer-section -->
@@ -203,7 +185,7 @@
               <!-- Todo: Implement proper auth for authorization and role checking -->
                 <div class="action-section"> 
                 <!-- For organizers/admins only - Always show -->
-                <a href="edit.php?event_id=<?php echo $event['id']; ?>" class="btn btn-warning">
+                <a href="edit.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit Event
                 </a>
 
@@ -215,7 +197,7 @@
                     Browse Other Events
                   </a>
                 <?php else: ?>
-                  <a href="register.php?event_id=<?php echo $event['id']; ?>" class="btn btn-register">
+                  <a href="register.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-register">
                     <i class="bi bi-calendar-check"></i> Register Now
                   </a>
                   <button class="btn btn-secondary" onclick="window.print()">

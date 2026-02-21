@@ -3,8 +3,9 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Category.php';
 
-class GetCategoryById {
-     private $db;
+class GetCategoryByIdRepo
+{
+    private $db;
 
     public function __construct()
     {

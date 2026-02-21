@@ -39,7 +39,7 @@ class User
     public function toArray()
     {
         return [
-            'id' => $this->user_id,
+            'user_id' => $this->user_id,
             'full_name' => $this->full_name,
             'email' => $this->email,
             'role' => $this->role,

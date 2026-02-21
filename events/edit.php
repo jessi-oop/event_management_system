@@ -1,3 +1,67 @@
+<?php
+require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
+require_once __DIR__ . '/../app/Services/EventService/updateEvent.php';
+require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
+require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+
+$require_role = new RequireRole();
+$get_event_by_id = new GetEventByIdService();
+$update_event = new UpdateEventService();
+$get_ll_categories = new GetAllCategoriesService();
+
+$require_role->requireRole(['organizer', 'admin']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $event_id = intval($_POST['event_id'] ?? 0);
+} else {
+    $event_id = intval($_GET['event_id'] ?? 0);
+}
+
+if (!$event_id) {
+    header('Location: /Event-Management-System/organizer/manage.php');
+}
+
+$event = $get_event_by_id->getEventById($event_id);
+$categories = $get_ll_categories->getAllCategories();
+
+if (!$event) {
+    header('Location: /browse.php');
+    exit;
+}
+
+$message = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $category_id = intval($_POST['category_id'] ?? 0);
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $event_date = $_POST['event_date'] ?? '';
+    $event_time = $_POST['event_time'] ?? '';
+    $location = trim($_POST['location'] ?? '');
+    $capacity = intval($_POST['capacity'] ?? 0);
+
+    $updated_event = $update_event->updateEvent(
+        $event_id,
+        $category_id,
+        $title,
+        $description,
+        $event_date,
+        $event_time,
+        $location,
+        $capacity
+    );
+
+
+    $message = $updated_event['message'];
+
+    if ($updated_event['success']) {
+        $event = $get_event_by_id->getEventById($event_id);
+    }
+    echo '<pre>';
+    var_dump($message);
+    echo '</pre>';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,8 +79,8 @@
       rel="stylesheet"
     />
     <!-- External CSS -->
-    <link rel="stylesheet" href="/../assets/css/create.css" />
-    <link rel="stylesheet" href="/../assets/css/edit.css" />
+    <link rel="stylesheet" href="../assets/css/create.css" />
+    <link rel="stylesheet" href="../assets/css/edit.css" />
   </head>
   <body>
     <div class="container-fluid">
@@ -31,38 +95,6 @@
         <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center">
           <div class="content-wrapper w-100">
             
-            <?php
-            // Get event ID from URL
-            $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
-
-            // Check if user is authorized (organizer or admin)
-            // if (!is_authorized_user()) {
-            //   header('Location: browse.php');
-            //   exit();
-            // }
-
-            // Fetch event from database
-            // $event = fetch_event_by_id($event_id);
-
-            // Sample event data - replace with database fetch
-            $event = [
-              'id' => 1,
-              'category_id' => 1,
-              'title' => 'Annual Tech Conference 2024',
-              'description' => 'Join us for the biggest technology conference of the year. This premier event brings together industry leaders, innovators, and technology enthusiasts from around the world.',
-              'event_date' => '2024-03-15',
-              'event_time' => '09:00',
-              'location' => 'Convention Center, New York',
-              'capacity' => 500
-            ];
-
-            // If event not found, redirect
-            // if (!$event) {
-            //   header('Location: browse.php');
-            //   exit();
-            // }
-            ?>
-
             <!-- Back Button -->
             <div class="back-nav mb-3">
               <a href="details.php?event_id=<?php echo $event_id; ?>" class="back-link">
@@ -78,10 +110,10 @@
 
             <!-- Event Edit Form -->
             <div class="form-container">
-              <form action="process_edit.php" method="POST" id="editEventForm">
+              <form action="edit.php" method="POST" id="editEventForm">
                 
                 <!-- Hidden field for event ID -->
-                <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>" />
+                <input type="hidden" name="event_id" value="<?= htmlspecialchars($event_id)?>" />
                 
                 <!-- Event Title -->
                 <div class="mb-4">
@@ -92,7 +124,7 @@
                     id="title" 
                     name="title" 
                     placeholder="Enter event title"
-                    value="<?php echo htmlspecialchars($event['title']); ?>"
+                    value="<?php echo htmlspecialchars($event->title); ?>"
                     required
                   />
                 </div>
@@ -104,21 +136,12 @@
                     <option value="" disabled>Select a category</option>
                     <!-- PHP: Loop through categories from database -->
                     <?php
-                    // Example categories - replace with database fetch
-                    $categories = [
-                      ['id' => 1, 'name' => 'Conference'],
-                      ['id' => 2, 'name' => 'Workshop'],
-                      ['id' => 3, 'name' => 'Seminar'],
-                      ['id' => 4, 'name' => 'Webinar'],
-                      ['id' => 5, 'name' => 'Networking'],
-                      ['id' => 6, 'name' => 'Training']
-                    ];
 
-            foreach ($categories as $category) {
-                $selected = ($category['id'] == $event['category_id']) ? 'selected' : '';
-                echo "<option value='{$category['id']}' {$selected}>{$category['name']}</option>";
-            }
-            ?>
+                    foreach ($categories as $category) {
+                        $selected = ($category->category_id == $event->category_id) ? 'selected' : '';
+                        echo "<option value='{$category->category_id}' {$selected}>{$category->category_name}</option>";
+                    }
+?>
                   </select>
                 </div>
 
@@ -132,7 +155,7 @@
                     rows="5"
                     placeholder="Enter event description"
                     required
-                  ><?php echo htmlspecialchars($event['description']); ?></textarea>
+                  ><?php echo htmlspecialchars($event->description); ?></textarea>
                 </div>
 
                 <!-- Date and Time Row -->
@@ -145,7 +168,7 @@
                       class="form-control" 
                       id="event_date" 
                       name="event_date"
-                      value="<?php echo $event['event_date']; ?>"
+                      value="<?php echo $event->event_date; ?>"
                       required
                     />
                   </div>
@@ -158,7 +181,7 @@
                       class="form-control" 
                       id="event_time" 
                       name="event_time"
-                      value="<?php echo $event['event_time']; ?>"
+                      value="<?php echo $event->event_time; ?>"
                       required
                     />
                   </div>
@@ -173,7 +196,7 @@
                     id="location" 
                     name="location" 
                     placeholder="Enter event location"
-                    value="<?php echo htmlspecialchars($event['location']); ?>"
+                    value="<?php echo htmlspecialchars($event->location); ?>"
                     required
                   />
                 </div>
@@ -187,7 +210,7 @@
                     id="capacity" 
                     name="capacity" 
                     placeholder="Enter maximum capacity"
-                    value="<?php echo $event['capacity']; ?>"
+                    value="<?php echo $event->capacity; ?>"
                     min="1"
                     required
                   />
@@ -227,7 +250,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form action="process_delete.php" method="POST" style="display: inline;">
-                      <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>" />
+                      <input type="hidden" name="event_id" value="<?php echo $event->event_id; ?>" />
                       <button type="submit" class="btn btn-danger">Delete Event</button>
                     </form>
                   </div>

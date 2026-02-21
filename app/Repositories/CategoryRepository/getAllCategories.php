@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Category.php';
 
-class GetAllCategories {
+class GetAllCategoriesRepo
+{
     private $db;
 
     public function __construct()
@@ -21,7 +22,11 @@ class GetAllCategories {
                 $categories[] = new Category($data);
             }
 
-            return $categories;
+            if ($categories) {
+                return $categories;
+            }
+
+            return ['success' => false, 'message' => 'Error retrieving categories.'];
 
         } catch (PDOException $e) {
             error_log('Error getting categories: ' . $e->getMessage());
