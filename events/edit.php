@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="process_delete.php" method="POST" style="display: inline;">
+                    <form action="/Event-Management-System/events/delete.php" method="POST" style="display: inline;">
                       <input type="hidden" name="event_id" value="<?php echo $event->event_id; ?>" />
                       <button type="submit" class="btn btn-danger">Delete Event</button>
                     </form>
@@ -279,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       // Optional: Warn when reducing capacity
       const capacityInput = document.getElementById('capacity');
-      const originalCapacity = <?php echo $event['capacity']; ?>;
+      const originalCapacity = <?php echo $event->capacity; ?>;
       
       capacityInput.addEventListener('change', function() {
         if (parseInt(this.value) < originalCapacity) {

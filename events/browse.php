@@ -1,3 +1,21 @@
+<?php
+
+require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
+require_once __DIR__ . '/../app/Services/EventService/getAllEvents.php';
+require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+
+$require_login = new RequireLogin();
+$get_all_events = new GetAllEventsService();
+$get_all_categories = new GetAllCategoriesService();
+
+$require_login->requireLogin();
+
+$events = $get_all_events->getAllEvents();
+$categories = $get_all_categories->getAllCategories();
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -125,19 +143,19 @@
                 ],
               ];
 
-              // Loop through events and create cards
-              foreach ($sample_events as $event) {
-                  // Truncate description for teaser
-                  $teaser = strlen($event['description']) > 120
-                    ? substr($event['description'], 0, 120) . '...'
-                    : $event['description'];
+// Loop through events and create cards
+foreach ($sample_events as $event) {
+    // Truncate description for teaser
+    $teaser = strlen($event['description']) > 120
+      ? substr($event['description'], 0, 120) . '...'
+      : $event['description'];
 
-                  // Format date
-                  $formatted_date = date('M d, Y', strtotime($event['event_date']));
+    // Format date
+    $formatted_date = date('M d, Y', strtotime($event['event_date']));
 
-                  // Format time
-                  $formatted_time = date('g:i A', strtotime($event['event_time']));
-                  ?>
+    // Format time
+    $formatted_time = date('g:i A', strtotime($event['event_time']));
+    ?>
 
               <!-- Event Card -->
               <div class="col-12 col-md-6 col-lg-4">
