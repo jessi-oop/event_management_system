@@ -7,6 +7,11 @@ class DeleteEventRepo
 {
     private $db;
 
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
+
     // Used for deleting events
     public function deleteEvent($event_id)
     {

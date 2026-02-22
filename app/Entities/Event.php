@@ -81,4 +81,19 @@ class Event
         return $this->getFormattedDate() . ' at ' . $this->getFormattedTime();
     }
 
+    public function isUpcoming()
+    {
+        return $this->status === 'upcoming';
+    }
+
+    public function isCompleted()
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isFull()
+    {
+        return $this->status === 'full' || $this->available_spots <= 0;
+    }
+
 }
