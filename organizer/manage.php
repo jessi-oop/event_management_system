@@ -314,7 +314,7 @@ $total_registrations = array_sum(array_map(fn ($e) =>  $e->registered_count, $or
           </div> <!-- CLOSE: modal-body -->
           <div class="modal-footer"> <!-- OPEN: modal-footer -->
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form action="process_delete.php" method="POST" style="display: inline;"> <!-- OPEN: form -->
+            <form action="/Event-Management-System/events/delete.php" method="POST" style="display: inline;"> <!-- OPEN: form -->
               <input type="hidden" name="event_id" id="deleteEventId" />
               <button type="submit" class="btn btn-danger">Delete Event</button>
             </form> <!-- CLOSE: form -->
