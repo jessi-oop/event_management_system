@@ -1,3 +1,19 @@
+<?php
+require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+require_once __DIR__ . '/../app/Services/EventService/getUpcomingEvents.php';
+require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
+
+$get_all_categories = new GetAllCategoriesService();
+$get_upcoming_events = new GetUpcomingEventsService();
+$require_login = new RequireLogin();
+
+$require_login->requireLogin();
+
+$categories = $get_all_categories->getAllCategories();
+$upcoming_events = $get_upcoming_events->getUpcomingEvents();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,19 +31,15 @@
       rel="stylesheet"
     />
     <!-- External CSS -->
-    <link rel="stylesheet" href="/../assets/css/browse.css" />
+     <link rel="stylesheet" href="../assets/css/dashboard.css" />
+    <link rel="stylesheet" href="../assets/css/browse.css" />
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
         <!-- Sidebar -->
-        <div class="col-12 col-md-3 col-lg-2 sidebar">
-          <h4 class="sidebar-title">EMS</h4>
-          <!-- Add your navigation menu here -->
-        </div>
+        <?php include '../includes/sidebar.php'?>
 
         <!-- Main Content -->
-        <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center">
+        <div class="main-content">
           <div class="content-wrapper w-100">
             <!-- Page Header -->
             <div class="page-header">
@@ -49,12 +61,15 @@
                 <div class="col-md-4">
                   <select class="form-select" id="categoryFilter">
                     <option value="">All Categories</option>
-                    <option value="1">Conference</option>
-                    <option value="2">Workshop</option>
-                    <option value="3">Seminar</option>
-                    <option value="4">Webinar</option>
-                    <option value="5">Networking</option>
-                    <option value="6">Training</option>
+                    <?php if (empty($categories)): ?>
+                      <option value="">No available categories</option>
+                    <?php else: ?>
+                      <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category->category_id)?>">
+                          <?= htmlspecialchars($category->category_name)?>
+                        </option>
+                      <?php endforeach; ?>
+                    <?php endif; ?>
                   </select>
                 </div>
               </div>
@@ -64,89 +79,28 @@
             <div class="row g-4" id="eventsGrid">
               
               <?php
-              // Example events array - replace with database fetch
-              // $events = fetch_events_from_db();
-
-              // Sample data for demonstration
-              $sample_events = [
-                [
-                  'id' => 1,
-                  'title' => 'Annual Tech Conference 2024',
-                  'description' => 'Join us for the biggest technology conference of the year. Featuring keynote speakers from leading tech companies, hands-on workshops, and networking opportunities with industry professionals.',
-                  'event_date' => '2024-03-15',
-                  'event_time' => '09:00',
-                  'location' => 'Convention Center, New York',
-                  'category' => 'Conference'
-                ],
-                [
-                  'id' => 2,
-                  'title' => 'Web Development Workshop',
-                  'description' => 'Learn the latest web development techniques and frameworks in this intensive workshop. Perfect for beginners and intermediate developers looking to expand their skills.',
-                  'event_date' => '2024-03-20',
-                  'event_time' => '14:00',
-                  'location' => 'Tech Hub, San Francisco',
-                  'category' => 'Workshop'
-                ],
-                [
-                  'id' => 3,
-                  'title' => 'Digital Marketing Seminar',
-                  'description' => 'Discover the secrets of successful digital marketing campaigns. Learn about SEO, social media marketing, content strategy, and analytics from industry experts.',
-                  'event_date' => '2024-03-25',
-                  'event_time' => '10:30',
-                  'location' => 'Business Center, Chicago',
-                  'category' => 'Seminar'
-                ],
-                [
-                  'id' => 4,
-                  'title' => 'AI and Machine Learning Webinar',
-                  'description' => 'Explore the future of artificial intelligence and machine learning. This online session covers the latest trends, applications, and career opportunities in AI.',
-                  'event_date' => '2024-04-05',
-                  'event_time' => '16:00',
-                  'location' => 'Online Event',
-                  'category' => 'Webinar'
-                ],
-                [
-                  'id' => 5,
-                  'title' => 'Startup Networking Night',
-                  'description' => 'Connect with fellow entrepreneurs, investors, and startup enthusiasts. Share ideas, find co-founders, and build valuable relationships in the startup ecosystem.',
-                  'event_date' => '2024-04-10',
-                  'event_time' => '18:00',
-                  'location' => 'Innovation Hub, Austin',
-                  'category' => 'Networking'
-                ],
-                [
-                  'id' => 6,
-                  'title' => 'Professional Leadership Training',
-                  'description' => 'Develop essential leadership skills for the modern workplace. Topics include team management, communication strategies, conflict resolution, and strategic thinking.',
-                  'event_date' => '2024-04-15',
-                  'event_time' => '09:00',
-                  'location' => 'Training Center, Boston',
-                  'category' => 'Training'
-                ],
-              ];
-
               // Loop through events and create cards
-              foreach ($sample_events as $event) {
+              foreach ($upcoming_events as $event) {
                   // Truncate description for teaser
-                  $teaser = strlen($event['description']) > 120
-                    ? substr($event['description'], 0, 120) . '...'
-                    : $event['description'];
+                  $teaser = strlen($event->description) > 120
+                    ? substr($event->description, 0, 120) . '...'
+                    : $event->description;
 
                   // Format date
-                  $formatted_date = date('M d, Y', strtotime($event['event_date']));
+                  $formatted_date = date('M d, Y', strtotime($event->event_date));
 
                   // Format time
-                  $formatted_time = date('g:i A', strtotime($event['event_time']));
+                  $formatted_time = date('g:i A', strtotime($event->event_time));
                   ?>
 
               <!-- Event Card -->
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="event-card">
+                <div class="event-card" data-category="<?php echo htmlspecialchars($event->category_id)?>">
                   <!-- Category Badge -->
-                  <div class="category-badge"><?php echo $event['category']; ?></div>
+                  <div class="category-badge"><?php echo $event->category_name; ?></div>
                   
                   <!-- Event Title -->
-                  <h5 class="event-title"><?php echo $event['title']; ?></h5>
+                  <h5 class="event-title"><?php echo $event->title; ?></h5>
                   
                   <!-- Date and Time -->
                   <div class="event-meta">
@@ -163,7 +117,7 @@
                   <!-- Location -->
                   <div class="event-location">
                     <i class="bi bi-geo-alt"></i>
-                    <span><?php echo $event['location']; ?></span>
+                    <span><?php echo $event->location; ?></span>
                   </div>
                   
                   <!-- Description Teaser -->
@@ -171,15 +125,16 @@
 
                   <!-- Redirect button to details.php -->
                   <div class="card-actions" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                    <a href="details.php?event_id=<?php echo $event['id']; ?>" class="btn btn-outline" style="flex: 1; text-align: center;">
+                    <a href="details.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-outline" style="flex: 1; text-align: center;">
                       Read More
                     </a>
                   </div>
-                  
-                  <!-- Register Button -->
-                  <a href="register.php?event_id=<?php echo $event['id']; ?>" class="btn btn-register">
-                    Register Now
-                  </a>
+
+                  <!-- Register Form -->
+                  <form action="register.php" method="POST">
+                    <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event->event_id); ?>">
+                    <button type="submit" class="btn btn-register" style="width: 100%;">Register Now</button>
+                  </form>
                 </div>
               </div>
 
@@ -196,25 +151,37 @@
 
           </div>
         </div>
-      </div>
-    </div>
+     
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Optional: Search functionality -->
     <script>
-      // Simple search filter
-      document.getElementById('searchInput')?.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      
+      function filterEvents() {
+        const searchTerm = searchInput?.value.toLowerCase() || '';
+        const selectedCategory = categoryFilter?.value || ''; // Keep as empty string or ID
         const cards = document.querySelectorAll('.event-card');
         let visibleCount = 0;
         
         cards.forEach(card => {
-          const title = card.querySelector('.event-title').textContent.toLowerCase();
-          const description = card.querySelector('.event-description').textContent.toLowerCase();
+          const title = card.querySelector('.event-title')?.textContent.toLowerCase() || '';
+          const description = card.querySelector('.event-description')?.textContent.toLowerCase() || '';
+          const category = card.dataset.category || ''; // Keep as is (category_id)
           
-          if (title.includes(searchTerm) || description.includes(searchTerm)) {
+          // Check search match
+          const matchesSearch = !searchTerm || 
+            title.includes(searchTerm) || 
+            description.includes(searchTerm);
+          
+          // Check category match (empty selectedCategory means "All")
+          const matchesCategory = selectedCategory === '' || category === selectedCategory;
+          
+          // Show card only if both conditions are met
+          if (matchesSearch && matchesCategory) {
             card.closest('.col-12').style.display = '';
             visibleCount++;
           } else {
@@ -222,10 +189,14 @@
           }
         });
         
-        // Show/hide no events message
-        document.getElementById('noEventsMessage').style.display = 
-          visibleCount === 0 ? 'block' : 'none';
-      });
+        const noEventsMsg = document.getElementById('noEventsMessage');
+        if (noEventsMsg) {
+          noEventsMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+      }
+      
+      searchInput?.addEventListener('input', filterEvents);
+      categoryFilter?.addEventListener('change', filterEvents);
     </script>
   </body>
 </html>

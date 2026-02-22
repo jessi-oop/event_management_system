@@ -79,20 +79,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       rel="stylesheet"
     />
     <!-- External CSS -->
+    <link rel="stylesheet" href="../assets/css/dashboard.css" />
     <link rel="stylesheet" href="../assets/css/create.css" />
     <link rel="stylesheet" href="../assets/css/edit.css" />
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
+
         <!-- Sidebar -->
-        <div class="col-12 col-md-3 col-lg-2 sidebar">
-          <h4 class="sidebar-title">EMS</h4>
-          <!-- Add your navigation menu here -->
-        </div>
+        <?php include '../includes/sidebar.php' ?>
 
         <!-- Main Content -->
-        <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center">
+        <div class="main-content">
           <div class="content-wrapper w-100">
             
             <!-- Back Button -->
@@ -260,9 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           </div>
         </div>
-      </div>
-    </div>
-
+      
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     

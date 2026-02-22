@@ -33,17 +33,11 @@ $event = $get_event_by_id->getEventById($event_id);
     <link rel="stylesheet" href="../assets/css/details.css" />
   </head>
   <body>
-    <div class="container-fluid"> <!-- OPEN: container-fluid -->
-      <div class="row"> <!-- OPEN: row -->
-        
         <!-- Sidebar -->
-        <div class="col-12 col-md-3 col-lg-2 sidebar"> <!-- OPEN: sidebar col -->
-          <h4 class="sidebar-title">EMS</h4>
-          <!-- Add your navigation menu here -->
-        </div> <!-- CLOSE: sidebar col -->
+        <?php include '../includes/sidebar.php'?>
 
         <!-- Main Content -->
-        <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center"> <!-- OPEN: main-content col -->
+        <div class="main-content"> <!-- OPEN: main-content col -->
           <div class="content-wrapper w-100"> <!-- OPEN: content-wrapper -->
             
             <?php
@@ -211,9 +205,6 @@ $is_full = $available_slots <= 0;
           </div> <!-- CLOSE: content-wrapper -->
         </div> <!-- CLOSE: main-content col -->
         
-      </div> <!-- CLOSE: row -->
-    </div> <!-- CLOSE: container-fluid -->
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>

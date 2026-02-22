@@ -67,7 +67,13 @@ if (!$categories) {
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
     <!-- External CSS -->
+    <link rel="stylesheet" href="../assets/css/dashboard.css" />
     <link rel="stylesheet" href="/Event-Management-System/assets/css/create.css" />
 
     <!-- Bootstrap JS -->
@@ -80,16 +86,11 @@ if (!$categories) {
     </script>
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
         <!-- Sidebar -->
-        <div class="col-12 col-md-3 col-lg-2 sidebar">
-          <h4 class="sidebar-title">EMS</h4>
-          <!-- Add your navigation menu here -->
-        </div>
+        <?php include '../includes/sidebar.php'?>
 
         <!-- Main Content -->
-        <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center">
+        <div class="main-content">
           <div class="content-wrapper">
             <!-- Page Header -->
             <div class="page-header">
@@ -214,9 +215,6 @@ if (!$categories) {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    
+      
   </body>
 </html>

@@ -1,5 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
+
 
 require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventByOrganizer.php';
@@ -30,6 +33,8 @@ $category_id = $_GET['category_id'] ?? '';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Events - EMS</title>
+
+   
     <!-- Bootstrap CDN -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -41,20 +46,16 @@ $category_id = $_GET['category_id'] ?? '';
       rel="stylesheet"
     />
     <!-- External CSS -->
+     <link rel="stylesheet" href="../assets/css/dashboard.css" />
     <link rel="stylesheet" href="../assets/css/manage.css" />
   </head>
-  <body>
-    <div class="container-fluid"> <!-- OPEN: container-fluid -->
-      <div class="row"> <!-- OPEN: row -->
-        
+  <body>    
         <!-- Sidebar -->
-        <div class="col-12 col-md-3 col-lg-2 sidebar"> <!-- OPEN: sidebar col -->
-          <h4 class="sidebar-title">EMS</h4>
-          <!-- Add your navigation menu here -->
-        </div> <!-- CLOSE: sidebar col -->
+        <?php include '../includes/sidebar.php'?>
+        <!-- CLOSE: sidebar col -->
 
         <!-- Main Content -->
-        <div class="col-12 col-md-9 col-lg-10 main-content d-flex justify-content-center"> <!-- OPEN: main-content col -->
+         <div class="main-content"> <!-- OPEN: main-content col -->
           <div class="content-wrapper w-100"> <!-- OPEN: content-wrapper -->
             
             <?php
@@ -297,9 +298,7 @@ $total_registrations = array_sum(array_map(fn ($e) =>  $e->registered_count, $or
           </div> <!-- CLOSE: content-wrapper -->
         </div> <!-- CLOSE: main-content col -->
         
-      </div> <!-- CLOSE: row -->
-    </div> <!-- CLOSE: container-fluid -->
-
+        
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"> <!-- OPEN: modal -->
       <div class="modal-dialog modal-dialog-centered"> <!-- OPEN: modal-dialog -->
