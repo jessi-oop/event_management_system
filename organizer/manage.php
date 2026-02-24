@@ -3,7 +3,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
 
-
 require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventByOrganizer.php';
 require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
@@ -52,6 +51,7 @@ $category_id = $_GET['category_id'] ?? '';
   <body>    
         <!-- Sidebar -->
         <?php include '../includes/sidebar.php'?>
+        <?php include '../includes/modal.php' ?>
         <!-- CLOSE: sidebar col -->
 
         <!-- Main Content -->
@@ -299,43 +299,30 @@ $total_registrations = array_sum(array_map(fn ($e) =>  $e->registered_count, $or
         </div> <!-- CLOSE: main-content col -->
         
         
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"> <!-- OPEN: modal -->
-      <div class="modal-dialog modal-dialog-centered"> <!-- OPEN: modal-dialog -->
-        <div class="modal-content"> <!-- OPEN: modal-content -->
-          <div class="modal-header"> <!-- OPEN: modal-header -->
-            <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div> <!-- CLOSE: modal-header -->
-          <div class="modal-body"> <!-- OPEN: modal-body -->
-            <p>Are you sure you want to delete the event:</p>
-            <p class="event-name-delete" id="eventNameDelete"></p>
-            <p class="text-danger"><strong>Warning:</strong> This action cannot be undone. All registrations for this event will also be deleted.</p>
-          </div> <!-- CLOSE: modal-body -->
-          <div class="modal-footer"> <!-- OPEN: modal-footer -->
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form action="/Event-Management-System/events/delete.php" method="POST" style="display: inline;"> <!-- OPEN: form -->
-              <input type="hidden" name="event_id" id="deleteEventId" />
-              <button type="submit" class="btn btn-danger">Delete Event</button>
-            </form> <!-- CLOSE: form -->
-          </div> <!-- CLOSE: modal-footer -->
-        </div> <!-- CLOSE: modal-content -->
-      </div> <!-- CLOSE: modal-dialog -->
-    </div> <!-- CLOSE: modal -->
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom Scripts -->
     <script>
-      // Delete confirmation
       function confirmDelete(eventId, eventTitle) {
-        document.getElementById('deleteEventId').value = eventId;
-        document.getElementById('eventNameDelete').textContent = eventTitle;
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-      }
-      
+        showModal('confirm', 'Delete Event', 'Are you sure you want to delete "' + eventTitle + '"? This cannot be undone. All registrations will also be deleted.', {
+        confirmText: 'Yes, Delete',
+        cancelText: 'Cancel',
+        onConfirm: function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Event-Management-System/events/form-handlers/deleteEventHandler.php';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'event_id';
+            input.value = eventId;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+  }      
       // Search functionality
       const searchInput = document.getElementById('searchInput');
       const categoryFilter = document.getElementById('categoryFilter');

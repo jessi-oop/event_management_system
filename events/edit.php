@@ -1,25 +1,16 @@
 <?php
-require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
-require_once __DIR__ . '/../app/Services/EventService/updateEvent.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
 require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
 
-$require_role = new RequireRole();
-$get_event_by_id = new GetEventByIdService();
-$update_event = new UpdateEventService();
-$get_ll_categories = new GetAllCategoriesService();
-
-$require_role->requireRole(['organizer', 'admin']);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $event_id = intval($_POST['event_id'] ?? 0);
-} else {
-    $event_id = intval($_GET['event_id'] ?? 0);
-}
+$event_id = intval($_GET['event_id'] ?? 0);
 
 if (!$event_id) {
     header('Location: /Event-Management-System/organizer/manage.php');
+    exit;
 }
+
+$get_event_by_id = new GetEventByIdService();
+$get_ll_categories = new GetAllCategoriesService();
 
 $event = $get_event_by_id->getEventById($event_id);
 $categories = $get_ll_categories->getAllCategories();
@@ -27,38 +18,6 @@ $categories = $get_ll_categories->getAllCategories();
 if (!$event) {
     header('Location: /browse.php');
     exit;
-}
-
-$message = "";
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category_id = intval($_POST['category_id'] ?? 0);
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $event_date = $_POST['event_date'] ?? '';
-    $event_time = $_POST['event_time'] ?? '';
-    $location = trim($_POST['location'] ?? '');
-    $capacity = intval($_POST['capacity'] ?? 0);
-
-    $updated_event = $update_event->updateEvent(
-        $event_id,
-        $category_id,
-        $title,
-        $description,
-        $event_date,
-        $event_time,
-        $location,
-        $capacity
-    );
-
-
-    $message = $updated_event['message'];
-
-    if ($updated_event['success']) {
-        $event = $get_event_by_id->getEventById($event_id);
-    }
-    echo '<pre>';
-    var_dump($message);
-    echo '</pre>';
 }
 ?>
 
@@ -87,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Sidebar -->
         <?php include '../includes/sidebar.php' ?>
+        <?php include '../includes/modal.php'?>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -107,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Event Edit Form -->
             <div class="form-container">
-              <form action="edit.php" method="POST" id="editEventForm">
+              <form action="/Event-Management-System/events/form-handlers/editEventHandler.php" method="POST" id="editEventForm">
                 
                 <!-- Hidden field for event ID -->
                 <input type="hidden" name="event_id" value="<?= htmlspecialchars($event_id)?>" />
@@ -232,29 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               </form>
             </div>
 
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>Are you sure you want to delete this event? This action cannot be undone.</p>
-                    <p class="text-danger"><strong>Warning:</strong> All registrations associated with this event will also be deleted.</p>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="/Event-Management-System/events/delete.php" method="POST" style="display: inline;">
-                      <input type="hidden" name="event_id" value="<?php echo $event->event_id; ?>" />
-                      <button type="submit" class="btn btn-danger">Delete Event</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       
@@ -268,20 +205,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       // Delete confirmation
       function confirmDelete() {
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
+          showModal(
+              'confirm',
+              'Delete Event',
+              'Are you sure you want to delete "<?php echo addslashes($event->title); ?>"? This cannot be undone. All registrations will also be deleted.',
+              {
+                  confirmText: 'Yes, Delete',
+                  cancelText: 'Cancel',
+                  onConfirm: function() {
+                      const form = document.createElement('form');
+                      form.method = 'POST';
+                      form.action = '/Event-Management-System/events/form-handlers/deleteEventHandler.php';
+                      
+                      const input = document.createElement('input');
+                      input.type = 'hidden';
+                      input.name = 'event_id';
+                      input.value = <?php echo $event_id; ?>;
+                      
+                      form.appendChild(input);
+                      document.body.appendChild(form);
+                      form.submit();
+                  }
+              }
+          );
       }
-      
-      // Optional: Warn when reducing capacity
+
+      // Warn when reducing capacity
       const capacityInput = document.getElementById('capacity');
       const originalCapacity = <?php echo $event->capacity; ?>;
-      
+
       capacityInput.addEventListener('change', function() {
-        if (parseInt(this.value) < originalCapacity) {
-          if (!confirm('Warning: You are reducing the event capacity. Make sure this doesn\'t exceed the current number of registrations.')) {
-            this.value = originalCapacity;
+          if (parseInt(this.value) < originalCapacity) {
+              showModal(
+                  'warning',
+                  'Capacity Reduction Warning',
+                  'You are reducing the event capacity from ' + originalCapacity + ' to ' + this.value + '. Make sure this doesn\'t exceed the current number of registrations.',
+                  {
+                      confirmText: 'Keep New Value',
+                      cancelText: 'Revert to Original',
+                      onConfirm: function() {
+                          // Keep the new value (do nothing)
+                      },
+                      onCancel: function() {
+                          capacityInput.value = originalCapacity;
+                      }
+                  }
+              );
           }
-        }
       });
     </script>
   </body>

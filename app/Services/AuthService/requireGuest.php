@@ -21,7 +21,7 @@ class RequireGuest
             } elseif ($role === 'organizer') {
                 header('Location: /Event-Management-System/organizer/manage.php');
             } else {
-                header('Location: /Event-Management-System/dashboard/index.php');
+                header('Location: /Event-Management-System/attendee/myEventsAttendee.php');
             }
             exit;
         }

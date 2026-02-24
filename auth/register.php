@@ -1,31 +1,4 @@
-<?php
-session_start();
-require_once __DIR__ . '/../app/Services/AuthService/isLoggedIn.php';
-require_once __DIR__ . '/../app/Services/AuthService/register.php';
-
-$is_logged_in = new IsLoggedIn();
-$register = new Register();
-$message = '';
-$message_type = '';
-
-if ($is_logged_in->isLoggedIn()) {
-    header('Location: dashboard/index.php');
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $full_name = trim($_POST['fullname'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $role = $_POST['role'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    $result = $register->register($full_name, $email, $role, $password);
-
-    $message = $result['message'];
-    $message_type = $result['success'] ? 'sucess' : 'error';
-}
-
-?>
+<?php session_start();?>
 
 <!doctype html>
 <html lang="en">
@@ -33,24 +6,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
+    <!-- Bootstrap CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../assets/css/register.css" />
   </head>
   <body class="register-body">
     <div class="register-container">
       <h2>Create Account</h2>
 
-      <!-- Conditionaly displays a styled message box -->
-      <?php if ($message): ?> 
-        <div class="message <?= htmlspecialchars($message_type) ?>">
-          <?= htmlspecialchars($message)?>
-        </div>
-      <?php endif; ?>  
-
-      <?php if ($message_type === 'success'): ?>
-        <p><a href="login.php" class="btn">Click here to login.</a></p>
-      <?php else: ?>
-
-      <form method="POST" action="register.php">
+      <form method="POST" action="/Event-Management-System/auth/form-handlers/registrationHandler.php">
         <div class="register-form-group">
           <label class="labels" for="fullname">Fullname: </label>
           <input
@@ -68,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label class="labels" for="email">Email:</label>
           <input
             class="inputs"
-            type="text"
+            type="email"
             id="email"
             name="email"
             placeholder="Enter email"
@@ -93,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             id="password"
             name="password"
             placeholder="Enter password"
-            value = "<?= htmlspecialchars($_POST['password'] ?? '') ?>"
             required
           />
         </div>
@@ -109,8 +80,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </p>
         </div>
       </form>
-      <?php endif; ?>
       
     </div>
+
+    <!-- Include reusable modal -->
+    <?php include '../includes/modal.php'; ?>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

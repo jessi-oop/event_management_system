@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ .  '/../app/Services/EventService/deleteEvent.php';
-require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
+require_once __DIR__ .  '/../../app/Services/EventService/deleteEvent.php';
+require_once __DIR__ . '/../../app/Services/AuthService/requireRole.php';
 
 $delete_event = new DeleteEventService();
 $require_role = new RequireRole();

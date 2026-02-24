@@ -37,6 +37,7 @@ $upcoming_events = $get_upcoming_events->getUpcomingEvents();
   <body>
         <!-- Sidebar -->
         <?php include '../includes/sidebar.php'?>
+        <?php include '../includes/modal.php'?>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -131,7 +132,7 @@ $upcoming_events = $get_upcoming_events->getUpcomingEvents();
                   </div>
 
                   <!-- Register Form -->
-                  <form action="register.php" method="POST">
+                  <form action="/Event-Management-System/events/form-handlers/registerToEventHandler.php" method="POST">
                     <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event->event_id); ?>">
                     <button type="submit" class="btn btn-register" style="width: 100%;">Register Now</button>
                   </form>
@@ -158,6 +159,34 @@ $upcoming_events = $get_upcoming_events->getUpcomingEvents();
     
     <!-- Optional: Search functionality -->
     <script>
+      // Confirm registration modal
+      function confirmRegistration(eventId, eventTitle) {
+        showModal(
+            'confirm',
+            'Confirm Registration',
+            'Do you want to register for "' + eventTitle + '"?',
+            {
+                confirmText: 'Yes, Register',
+                cancelText: 'Cancel',
+                onConfirm: function() {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/Event-Management-System/events/form-handlers/registerEventHandler.php';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'event_id';
+                    input.value = eventId;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        );
+      }
+
+      // <!-- Optional: Search functionality -->
       const searchInput = document.getElementById('searchInput');
       const categoryFilter = document.getElementById('categoryFilter');
       

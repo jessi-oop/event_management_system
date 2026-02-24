@@ -185,6 +185,59 @@ body.login-body::before {
   text-decoration: underline;
 }
 
+/* Password input wrapper for positioning the toggle button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* Make room for the toggle button */
+}
+
+/* Password toggle button styling */
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.password-toggle-btn:hover {
+  color: #333;
+}
+
+.password-toggle-btn i {
+  font-size: 1.2rem;
+}
+
+/* Forgot password link styling */
+.forgot-password-link {
+  text-align: right;
+  margin-top: 8px;
+}
+
+.forgot-password-link a {
+  font-size: 0.9rem;
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-password-link a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
 /* ===================================
    RESPONSIVE DESIGN
    =================================== */

@@ -1,54 +1,8 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header: 'Location: /Event-Management-System/auth/login.php';
-    exit;
-}
-
-require_once __DIR__ . '/../app/Services/EventService/validateEventDetails.php';
-require_once __DIR__ . '/../app/Entities/User.php';
-require_once __DIR__ . '/../app/Services/EventService/createEvent.php';
 require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
 
-
-// if ()
-
-$validate_event_details = new ValidateEventDetails();
-$create_event = new CreateEventService();
-$user = new User();
 $category_service = new GetAllCategoriesService();
-
-$message = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
-    $category_id = intval($_POST['category_id'] ?? 0);
-    $description = trim($_POST['description'] ?? '');
-    $event_date = $_POST['event_date'] ?? '';
-    $event_time = $_POST['event_time'] ?? '';
-    $location = trim($_POST['location'] ?? '');
-    $capacity = intval($_POST['capacity'] ?? 0);
-
-
-    $event_created = $create_event->createEvent(
-        $category_id,
-        $title,
-        $description,
-        $event_date,
-        $event_time,
-        $location,
-        $capacity
-    );
-
-    echo "<pre>";
-    echo "Event created result: ";
-    var_dump($event_created);
-    echo "</pre>";
-
-    $message = $event_created['message'];
-}
-
 $categories = $category_service->getAllCategories();
 
 if (!$categories) {
@@ -100,7 +54,7 @@ if (!$categories) {
 
             <!-- Event Creation Form -->
             <div class="form-container">
-              <form action="create.php" method="POST" id="createEventForm">
+              <form action="/Event-Management-System/events/form-handlers/createEventHandler.php" method="POST" id="createEventForm">
                 
                 <!-- Event Title -->
                 <div class="mb-4">
@@ -215,6 +169,18 @@ if (!$categories) {
             </div>
           </div>
         </div>
+
+      <?php if (!empty($modal)): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              showModal(
+                '<?= $modal['type']?>'
+                '<?= $modal['title']?>'
+                '<?= $modal['message']?>'
+              )
+            })
+        </script>
+      <?php endif; ?>
       
   </body>
 </html>

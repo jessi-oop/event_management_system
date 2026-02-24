@@ -1,0 +1,35 @@
+<?php
+session_start();
+require_once __DIR__ . '/../../app/Services/AuthService/isLoggedIn.php';
+require_once __DIR__ . '/../../app/Services/AuthService/register.php';
+
+$is_logged_in = new IsLoggedIn();
+$register = new Register();
+
+if ($is_logged_in->isLoggedIn()) {
+    header('Location: dashboard/index.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $full_name = trim($_POST['fullname'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $role = $_POST['role'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    $result = $register->register($full_name, $email, $role, $password);
+
+    // Set flash message for modal
+    $_SESSION['flash'] = [
+        'type' => $result['success'] ? 'success' : 'error',
+        'title' => $result['success'] ? 'Registration Successful' : 'Registration Failed',
+        'message' => $result['message'],
+        'options' => $result['success'] ? ['redirectUrl' => '/Event-Management-System/auth/login.php'] : []
+    ];
+
+    // Redirect to prevent form resubmission
+    session_write_close();
+    header('Location: /Event-Management-System/auth/register.php');
+    exit;
+}
+?>

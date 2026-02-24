@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
 require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
 
@@ -8,8 +8,22 @@ $require_login = new RequireLogin();
 
 $require_login->requireLogin();
 
+$user_role = $_SESSION['role'] ?? 'guest';
+$user_id = $_SESSION['user_id'] ?? 0;
+
 $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 $event = $get_event_by_id->getEventById($event_id);
+
+$can_edit = false;
+
+if ($user_role === 'admin') {
+    $can_edit = true;
+} elseif ($user_role === 'organizer') {
+    $can_edit = ($event->organizer_id === $user_id);
+}
+
+$can_register = in_array($user_role, ['admin', 'organizer', 'attendee']);
+
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +49,7 @@ $event = $get_event_by_id->getEventById($event_id);
   <body>
         <!-- Sidebar -->
         <?php include '../includes/sidebar.php'?>
+        <?php include '../includes/modal.php'?>
 
         <!-- Main Content -->
         <div class="main-content"> <!-- OPEN: main-content col -->
@@ -179,24 +194,25 @@ $is_full = $available_slots <= 0;
               <!-- Todo: Implement proper auth for authorization and role checking -->
                 <div class="action-section"> 
                 <!-- For organizers/admins only - Always show -->
-                <a href="edit.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-warning">
+                 <?php if ($can_edit): ?>
+                <a href="/Event-Management-System/events/form-handlers/editEventHandler.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit Event
                 </a>
+                <?php endif; ?>
 
-                <?php if ($is_full): ?>
-                  <button class="btn btn-full" disabled>
-                    <i class="bi bi-x-circle"></i> Event Full
-                  </button>
-                  <a href="browse.php" class="btn btn-secondary">
-                    Browse Other Events
-                  </a>
-                <?php else: ?>
-                  <a href="register.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-register">
-                    <i class="bi bi-calendar-check"></i> Register Now
-                  </a>
-                  <button class="btn btn-secondary" onclick="window.print()">
-                    <i class="bi bi-printer"></i> Print Details
-                  </button>
+                <?php if ($can_register): ?>
+                  <?php if ($is_full): ?>
+                    <button class="btn btn-full" disabled>
+                      <i class="bi bi-x-circle"></i> Event Full
+                    </button>
+                    <a href="browse.php" class="btn btn-secondary">
+                      Browse Other Events
+                    </a>
+                  <?php else: ?>
+                    <button class="btn btn-success" onclick="confirmRegistration(<?php echo $event_id; ?>, '<?php echo addslashes($event->title); ?>')">
+                        <i class="bi bi-calendar-check"></i> Register Now
+                    </button>
+                  <?php endif; ?>
                 <?php endif; ?>
               </div> <!-- CLOSE: action-section -->
 
@@ -207,5 +223,35 @@ $is_full = $available_slots <= 0;
         
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+     
+    function confirmRegistration(eventId, eventTitle) {
+      showModal(
+          'confirm',
+          'Confirm Registration',
+          'Do you want to register for "' + eventTitle + '"?',
+          {
+              confirmText: 'Yes, Register',
+              cancelText: 'Cancel',
+              onConfirm: function() {
+                  const form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = '/Event-Management-System/events/form-handlers/registerEventHandler.php';
+                  
+                  const input = document.createElement('input');
+                  input.type = 'hidden';
+                  input.name = 'event_id';
+                  input.value = eventId;
+                  
+                  form.appendChild(input);
+                  document.body.appendChild(form);
+                  form.submit();
+              }
+          }
+      );
+    }
+
+    </script>
   </body>
 </html>

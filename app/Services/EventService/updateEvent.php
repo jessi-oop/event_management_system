@@ -17,7 +17,7 @@ class UpdateEventService
     public function __construct()
     {
         $this->update_event = new UpdateEventRepo();
-        $this->get_event_by_id = new GetEventByIdService();
+        $this->get_event_by_id = new GetEventByIdRepo();
         $this->get_all_category_ids = new GetAllCategoryIdsRepo();
         $this->get_current_user = new GetCurrentUser();
         $this->validate_event = new ValidateEventDetails();

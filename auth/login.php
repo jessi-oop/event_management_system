@@ -1,39 +1,5 @@
 <?php
-
 session_start();
-require_once __DIR__ . '/../app/Services/AuthService/requireGuest.php';
-require_once __DIR__ . '/../app/Services/AuthService/login.php';
-
-$require_guest = new RequireGuest();
-$login = new Login();
-
-$require_guest->requireGuest();
-$message = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email'] ?? '');
-    $password = trim($_POST['password'] ?? '');
-
-    if ($email === '' || $password === '') {
-        $message = 'Email and password is required.';
-    } else {
-        $result = $login->login($email, $password);
-
-        if ($result['success']) {
-            $user = $result['user'];
-            if ($user->isAdmin()) {
-                header('Location: /Event-Management-System/admin/index.php');
-            } elseif ($user->isOrganizer()) {
-                header('Location: /Event-Management-System/organizer/manage.php');
-            } else {
-                header('Location: /Event-Management-System/dashboard/index.php');
-            }
-            exit;
-        } else {
-            $message = $result['message'];
-        }
-    }
-}
 ?>
 
 <!doctype html>
@@ -52,45 +18,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
     <link rel="stylesheet" href="../assets/css/login.css" />
-
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    ></script>
   </head>
   <body class="login-body">
     <div class="login-container">
       <h2>Login</h2>
 
-      <?php if ($message): ?>
-        <div class="message error">
-            <?= htmlspecialchars($message) ?>
-        </div>
-      <?php endif; ?>
-
-      <form method="POST" action="login.php">
+      <form method="POST" action="/Event-Management-System/auth/form-handlers/loginHandler.php">
         <div class="login-form-group">
           <label for="email">Email:</label>
           <input
-            type="text"
+            type="email"
             id="email"
             name="email"
             placeholder="Enter email"
-            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
             required
           />
         </div>
 
         <div class="login-form-group">
           <label for="password">Password:</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Enter password"
-            value = "<?= htmlspecialchars($_POST['password'] ?? '') ?>"
-            required
-          />
+          <div class="password-input-wrapper">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Enter password"
+              required
+            />
+            <button type="button" class="password-toggle-btn" id="togglePassword">
+              <i class="bi bi-eye" id="toggleIcon"></i>
+            </button>
+          </div>
+          <div class="forgot-password-link">
+            <a href="forgot-password.php">Forgot password?</a>
+          </div>
         </div>
 
         <div class="login-form-group">
@@ -105,5 +66,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </form>
     </div>
+
+    <!-- Include reusable modal -->
+    <?php include '../includes/modal.php'; ?>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Password Toggle Script -->
+    <script>
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.getElementById('toggleIcon');
+
+      togglePassword.addEventListener('click', function() {
+        // Toggle password visibility
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle icon
+        if (type === 'password') {
+          toggleIcon.classList.remove('bi-eye-slash');
+          toggleIcon.classList.add('bi-eye');
+        } else {
+          toggleIcon.classList.remove('bi-eye');
+          toggleIcon.classList.add('bi-eye-slash');
+        }
+      });
+    </script>
   </body>
 </html>
