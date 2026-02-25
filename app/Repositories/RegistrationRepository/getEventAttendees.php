@@ -3,14 +3,17 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/Registration.php';
 
-class GetEventAttendeesRepo {
+class GetEventAttendeesRepo
+{
     private $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    public function getEventAttendees($event_id) {
+    public function getEventAttendees($event_id)
+    {
         try {
             $stmt = $this->db->prepare(
                 "SELECT u.user_id, u.full_name, u.email, r.registered_at 
@@ -20,8 +23,9 @@ class GetEventAttendeesRepo {
                  ORDER BY r.registered_at ASC"
             );
             $stmt->execute([$event_id]);
-            
-            return $stmt->fetchAll();
+            $data = $stmt->fetchAll();
+
+            return $data;
         } catch (PDOException $e) {
             error_log("Error getting event attendees: " . $e->getMessage());
             return [];

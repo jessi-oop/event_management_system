@@ -145,6 +145,14 @@ $role_display = ucfirst($user_role);
           </a>
         </li>
 
+        <!-- View Attendees (Organizer/Admin only) -->
+        <li class="nav-item">
+          <a href="/Event-Management-System/events/attendees.php" class="nav-link <?php echo $current_page === 'attendees' ? 'active' : ''; ?>">
+            <i class="bi bi-plus-circle"></i>
+            <span>Attendees</span>
+          </a>
+        </li>
+
         <!-- 
           ADD MORE ORGANIZER/ADMIN ITEMS HERE
           Examples of what you might add:
