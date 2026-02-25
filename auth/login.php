@@ -50,7 +50,7 @@ session_start();
             </button>
           </div>
           <div class="forgot-password-link">
-            <a href="forgot-password.php">Forgot password?</a>
+            <a href="forgotPassword.php">Forgot password?</a>
           </div>
         </div>
 
