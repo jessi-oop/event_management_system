@@ -2,10 +2,12 @@
 
 require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
+require_once __DIR__ . '/../app/Services/CategoryService/getCategoryById.php';
 require_once __DIR__ . '/../app/Services/RegistrationService/getEventAttendees.php';
 
 $require_login = new RequireLogin();
 $get_event_by_id = new GetEventByIdService();
+$get_category_by_id = new GetCategoryByIdService();
 $get_event_attendees = new GetEventAttendeesService();
 
 $require_login->requireLogin();
@@ -20,6 +22,7 @@ if (!$event_id) {
 }
 
 $event = $get_event_by_id->getEventById($event_id);
+$category = $get_category_by_id->getCategoryById($event->category_id);
 
 // Get attendees with new format
 $result = $get_event_attendees->getEventAttendees($event_id);
@@ -35,9 +38,9 @@ if ($result['success']) {
 $can_view = false;
 
 if ($user_role === 'admin') {
-    $can_edit = true;
+    $can_view = true;
 } elseif ($user_role === 'organizer') {
-    $can_edit = ($event->organizer_id === $user_id);
+    $can_view = ($event->organizer_id === $user_id);
 }
 
 if ($_SESSION['user_id'] !== $event->organizer_id && $_SESSION['role'] !== 'admin') {
@@ -72,6 +75,7 @@ if ($_SESSION['user_id'] !== $event->organizer_id && $_SESSION['role'] !== 'admi
       
       <!-- Sidebar -->
       <?php include '../includes/sidebar.php'; ?>
+      <?php include '../includes/modal.php'; ?>
 
       <!-- Main Content -->
       <div class="main-content">
@@ -100,7 +104,7 @@ $formatted_time = date('g:i A', strtotime($event->event_time));
             <div class="row align-items-center">
               <div class="col-lg-8">
                 <div class="event-header">
-                  <span class="category-badge"><?php echo $event->category_id; ?></span>
+                  <span class="category-badge"><?php echo $category->category_name; ?></span>
                   <h2 class="event-title"><?php echo $event->title; ?></h2>
                 </div>
                 <div class="event-meta">
@@ -270,7 +274,10 @@ $formatted_time = date('g:i A', strtotime($event->event_time));
                         <button 
                           class="btn-action btn-remove" 
                           title="Remove Attendee"
-                          onclick="confirmRemove(<?php echo $event_id; ?>, <?php echo $attendee['user_id']; ?>, '<?php echo addslashes($attendee['full_name']); ?>')">
+                          data-event-id="<?php echo $event_id; ?>"
+                          data-user-id="<?php echo $attendee['user_id']; ?>"
+                          data-attendee-name="<?php echo htmlspecialchars($attendee['full_name']); ?>"
+                          onclick="confirmRemove(this.dataset.eventId, this.dataset.userId, this.dataset.attendeeName)">
                           <i class="bi bi-x-circle"></i>
                         </button>
                       </div>
@@ -298,31 +305,6 @@ $formatted_time = date('g:i A', strtotime($event->event_time));
 
     </div>
 
-    <!-- Remove Attendee Modal -->
-    <div class="modal fade" id="removeModal" tabindex="-1" aria-labelledby="removeModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="removeModalLabel">Remove Attendee</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>Are you sure you want to remove this attendee?</p>
-            <p class="attendee-name-remove" id="attendeeNameRemove"></p>
-            <p class="text-danger"><strong>Warning:</strong> This will cancel their registration and they will need to register again.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form action="process_remove_attendee.php" method="POST" style="display: inline;">
-              <input type="hidden" name="event_id" id="removeEventId" />
-              <input type="hidden" name="user_id" id="removeUserId" />
-              <button type="submit" class="btn btn-danger">Remove Attendee</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -330,11 +312,30 @@ $formatted_time = date('g:i A', strtotime($event->event_time));
     <script>
       // Remove attendee confirmation
       function confirmRemove(eventId, userId, attendeeName) {
-        document.getElementById('removeEventId').value = eventId;
-        document.getElementById('removeUserId').value = userId;
-        document.getElementById('attendeeNameRemove').textContent = attendeeName;
-        const removeModal = new bootstrap.Modal(document.getElementById('removeModal'));
-        removeModal.show();
+        showModal('confirm', 'Remove Attendee', 'Are you sure you want to remove "' + attendeeName + '" from this event? This will cancel their registration and they will need to register again.', {
+          confirmText: 'Yes, Remove',
+          cancelText: 'Cancel',
+          onConfirm: function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Event-Management-System/events/form-handlers/removeAttendeeHandler.php';
+            
+            const eventInput = document.createElement('input');
+            eventInput.type = 'hidden';
+            eventInput.name = 'event_id';
+            eventInput.value = eventId;
+            form.appendChild(eventInput);
+            
+            const userInput = document.createElement('input');
+            userInput.type = 'hidden';
+            userInput.name = 'user_id';
+            userInput.value = userId;
+            form.appendChild(userInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
       }
       
       // Send email

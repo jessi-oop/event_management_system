@@ -215,7 +215,7 @@ $is_full = $available_slots <= 0;
                   <?php endif; ?>
                 <?php endif; ?>
 
-                 <a href="attendees.php?event_id=<?php echo $event_id; ?>" class="btn btn-info">
+                 <a href="/Event-Management-System/organizer/attendees.php?event_id=<?php echo $event_id; ?>" class="btn btn-info">
                     <i class="bi bi-people-fill"></i> View Attendees
                 </a>
               </div> <!-- CLOSE: action-section -->

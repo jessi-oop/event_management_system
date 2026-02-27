@@ -12,6 +12,7 @@ class Event
     public $location;
     public $capacity;
     public $status;
+    public $approval_status;
     public $created_at;
     public $updated_at;
 
@@ -34,6 +35,7 @@ class Event
         $this->location = $data['location'] ?? null;
         $this->capacity = $data['capacity'] ?? null;
         $this->status = $data['status'] ?? null;
+        $this->approval_status = $data['approval_status'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
 
