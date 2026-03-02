@@ -95,47 +95,70 @@ $upcoming_events = $get_upcoming_events->getUpcomingEvents();
                   ?>
 
               <!-- Event Card -->
-              <div class="col-12 col-md-6 col-lg-4">
+              <div class="col-12 col-md-6">
                 <div class="event-card" data-category="<?php echo htmlspecialchars($event->category_id)?>">
-                  <!-- Category Badge -->
-                  <div class="category-badge"><?php echo $event->category_name; ?></div>
                   
-                  <!-- Event Title -->
-                  <h5 class="event-title"><?php echo $event->title; ?></h5>
-                  
-                  <!-- Date and Time -->
-                  <div class="event-meta">
-                    <div class="meta-item">
-                      <i class="bi bi-calendar-event"></i>
-                      <span><?php echo $formatted_date; ?></span>
+                  <!-- Event Image -->
+                  <div class="event-image-container">
+                    <?php if (!empty($event->image_path) && file_exists(__DIR__ . '/../' . $event->image_path)): ?>
+                      <img 
+                        src="/Event-Management-System/<?php echo htmlspecialchars($event->image_path); ?>" 
+                        alt="<?php echo htmlspecialchars($event->title); ?>"
+                        class="event-image"
+                      />
+                    <?php else: ?>
+                      <div class="event-image-placeholder">
+                        <i class="bi bi-image"></i>
+                      </div>
+                    <?php endif; ?>
+                  </div>
+
+                  <!-- Event Content Wrapper -->
+                  <div class="event-content">
+                    <!-- Category Badge -->
+                    <div class="category-badge"><?php echo $event->category_name; ?></div>
+                    
+                    <!-- Event Title -->
+                    <h5 class="event-title"><?php echo $event->title; ?></h5>
+                    
+                    <!-- Date and Time -->
+                    <div class="event-meta">
+                      <div class="meta-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span><?php echo $formatted_date; ?></span>
+                      </div>
+                      <div class="meta-item">
+                        <i class="bi bi-clock"></i>
+                        <span><?php echo $formatted_time; ?></span>
+                      </div>
                     </div>
-                    <div class="meta-item">
-                      <i class="bi bi-clock"></i>
-                      <span><?php echo $formatted_time; ?></span>
+
+                    <!-- Location -->
+                    <div class="event-location">
+                      <i class="bi bi-geo-alt"></i>
+                      <span><?php echo $event->location; ?></span>
+                    </div>
+                    
+                    <!-- Description Teaser -->
+                    <p class="event-description"><?php echo $teaser; ?></p>
+
+                    <!-- Buttons at bottom -->
+                    <div style="margin-top: auto;">
+                      <!-- Read More Button -->
+                      <div class="card-actions">
+                        <a href="details.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-outline">
+                          Read More
+                        </a>
+                      </div>
+
+                      <!-- Register Form -->
+                      <form action="/Event-Management-System/events/form-handlers/registerToEventHandler.php" method="POST">
+                        <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event->event_id); ?>">
+                        <button type="submit" class="btn btn-register">Register Now</button>
+                      </form>
                     </div>
                   </div>
 
-                  <!-- Location -->
-                  <div class="event-location">
-                    <i class="bi bi-geo-alt"></i>
-                    <span><?php echo $event->location; ?></span>
-                  </div>
-                  
-                  <!-- Description Teaser -->
-                  <p class="event-description"><?php echo $teaser; ?></p>
-
-                  <!-- Redirect button to details.php -->
-                  <div class="card-actions" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                    <a href="details.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-outline" style="flex: 1; text-align: center;">
-                      Read More
-                    </a>
-                  </div>
-
-                  <!-- Register Form -->
-                  <form action="/Event-Management-System/events/form-handlers/registerToEventHandler.php" method="POST">
-                    <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event->event_id); ?>">
-                    <button type="submit" class="btn btn-register" style="width: 100%;">Register Now</button>
-                  </form>
                 </div>
               </div>
 

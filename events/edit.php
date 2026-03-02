@@ -12,13 +12,13 @@ if (!$event_id) {
 
 $require_role = new RequireRole();
 $get_event_by_id = new GetEventByIdService();
-$get_ll_categories = new GetAllCategoriesService();
+$get_all_categories = new GetAllCategoriesService();
 
 $require_role->requireRole(['organizer', 'admin']);
 $event = $get_event_by_id->getEventById($event_id);
-$categories = $get_ll_categories->getAllCategories();
+$categories = $get_all_categories->getAllCategories();
 
-$is_rejected = $event->approval_Status === 'rejected';
+$is_rejected = $event->approval_status === 'rejected';
 
 if (!$event) {
     header('Location: /browse.php');
@@ -72,7 +72,8 @@ if (!$event) {
 
             <!-- Event Edit Form -->
             <div class="form-container">
-              <form action="/Event-Management-System/events/form-handlers/editEventHandler.php" method="POST" id="editEventForm">
+              <form action="/Event-Management-System/events/form-handlers/editEventHandler.php" 
+              method="POST" id="editEventForm" enctype="multipart/form-data">
                 
                 <!-- Hidden field for event ID -->
                 <input type="hidden" name="event_id" value="<?= htmlspecialchars($event_id)?>" />
@@ -161,6 +162,66 @@ if (!$event) {
                     value="<?php echo htmlspecialchars($event->location); ?>"
                     required
                   />
+                </div>
+
+               <!-- Location Image Section -->
+                <div class="mb-4">
+                  <label class="form-label">Location Image</label>
+                  
+                  <div class="image-upload-container">
+                    <?php if ($event->image_path): ?>
+                      <!-- Current Image Preview -->
+                      <div class="current-image-wrapper">
+                        <img 
+                          src="/Event-Management-System/<?= htmlspecialchars($event->image_path) ?>" 
+                          alt="Current location image"
+                          class="current-image-preview"
+                          id="currentImage"
+                        />
+                        <div class="image-overlay">
+                          <span class="image-badge">Current Image</span>
+                        </div>
+                      </div>
+                    <?php else: ?>
+                      <!-- No Image Placeholder -->
+                      <div class="no-image-placeholder">
+                        <i class="bi bi-image"></i>
+                        <span>No image uploaded</span>
+                      </div>
+                    <?php endif; ?>
+                    
+                    <!-- Upload New Image -->
+                    <div class="upload-section">
+                      <label for="event_image" class="upload-label">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <span class="upload-text">Choose new image</span>
+                        <span class="upload-hint">JPG, PNG, GIF up to 5MB</span>
+                      </label>
+                      <input 
+                        type="file" 
+                        class="form-control d-none" 
+                        id="event_image" 
+                        name="event_image" 
+                        accept="image/*"
+                        onchange="previewNewImage(this)"
+                      />
+                    </div>
+                    
+                    <!-- New Image Preview (hidden by default) -->
+                    <div class="new-image-preview d-none" id="newImagePreview">
+                      <img src="" alt="New image preview" id="newImage" />
+                      <div class="image-overlay">
+                        <span class="image-badge badge-new">New Image</span>
+                        <button type="button" class="btn-cancel-new" onclick="cancelNewImage()" title="Cancel">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <small class="form-text text-muted mt-2">
+                    <i class="bi bi-info-circle"></i> Upload a clear photo of the venue to help attendees find the location.
+                  </small>
                 </div>
 
                 <!-- Capacity -->

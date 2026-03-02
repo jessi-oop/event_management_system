@@ -4,20 +4,26 @@ require_once __DIR__ . '/../../Repositories/EventRepository/createEvent.php';
 require_once __DIR__ . '/../../Repositories/CategoryRepository/getAllCategoryIds.php';
 require_once __DIR__ . '/../AuthService/getCurrentUser.php';
 require_once __DIR__ . '/validateEventDetails.php';
+require_once __DIR__ . '/../ApprovalService/submitForApproval.php';
+require_once __DIR__ . '/../../Core/Database.php';
 
 class CreateEventService
 {
+    private $db;
     private $create_event;
     private $get_category_ids;
     private $get_current_user;
     private $validate_event_details;
+    private $submit_for_approval;
 
     public function __construct()
     {
+        $this->db = Database::getInstance()->getConnection();
         $this->create_event = new CreateEventRepo();
         $this->get_category_ids = new GetAllCategoryIdsRepo();
         $this->get_current_user = new GetCurrentUserService();
         $this->validate_event_details = new ValidateEventDetails();
+        $this->submit_for_approval = new SubmitForApprovalService();
     }
 
     public function createEvent(
@@ -27,16 +33,15 @@ class CreateEventService
         $event_date,
         $event_time,
         $location,
-        $capacity
+        $capacity,
+        $image_path = null
     ) {
-
         $category_id = (int)$category_id;
 
         $current_user = $this->get_current_user->getCurrentUser();
         if (!$current_user) {
             return ['success' => false, 'message' => 'You must be logged in to create events.'];
         }
-
 
         if (!in_array($current_user->role, ['organizer', 'admin'])) {
             return ['success' => false, 'message' => 'You must be an organizer or admin to create events.'];
@@ -51,7 +56,8 @@ class CreateEventService
             $event_date,
             $event_time,
             $location,
-            $capacity
+            $capacity,
+            $image_path
         );
 
         if (!$validate['valid']) {
@@ -63,21 +69,52 @@ class CreateEventService
             return ['success' => false, 'message' => 'Category must be in the available categories.'];
         }
 
-        $create_event = $this->create_event->createEvent(
-            $organizer_id,
-            $category_id,
-            $title,
-            $description,
-            $event_date,
-            $event_time,
-            $location,
-            $capacity
-        );
+        try {
+            // Start transaction
+            $this->db->beginTransaction();
 
-        if ($create_event) {
-            return ['success' => true, 'message' => 'Event created successfully.'];
+            // Create event
+            $event_id = $this->create_event->createEvent(
+                $organizer_id,
+                $category_id,
+                $title,
+                $description,
+                $event_date,
+                $event_time,
+                $location,
+                $capacity,
+                $image_path
+            );
+
+            if (!$event_id) {
+                throw new Exception('Failed to create event in database');
+            }
+
+            // Submit for approval (INSIDE TRANSACTION)
+            $approval_result = $this->submit_for_approval->submitForApproval($event_id, $organizer_id);
+
+            if (!$approval_result) {
+                throw new Exception('Failed to submit for approval');
+            }
+
+            // Commit transaction (both event + approval)
+            $this->db->commit();
+
+            return [
+                'success' => true,
+                'event_id' => $event_id,
+                'message' => 'Event created successfully.'
+            ];
+
+        } catch (Exception $e) {
+            // Rollback on error
+            $this->db->rollBack();
+            error_log('Event creation failed: ' . $e->getMessage());
+
+            return [
+                'success' => false,
+                'message' => 'Error in creating the event.'
+            ];
         }
-
-        return ['success' => false, 'message' => 'Error in creating the event.'];
     }
 }

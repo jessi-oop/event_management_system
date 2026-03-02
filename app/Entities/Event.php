@@ -10,6 +10,7 @@ class Event
     public $event_date;
     public $event_time;
     public $location;
+    public $image_path;
     public $capacity;
     public $status;
     public $approval_status;
@@ -33,6 +34,8 @@ class Event
         $this->event_date = $data['event_date'] ?? null;
         $this->event_time = $data['event_time'] ?? null;
         $this->location = $data['location'] ?? null;
+        $this->image_path = $data['image_path'] ?? null;
+
         $this->capacity = $data['capacity'] ?? null;
         $this->status = $data['status'] ?? null;
         $this->approval_status = $data['approval_status'] ?? null;

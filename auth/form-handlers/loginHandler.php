@@ -3,11 +3,27 @@
 session_start();
 require_once __DIR__ . '/../../app/Services/AuthService/requireGuest.php';
 require_once __DIR__ . '/../../app/Services/AuthService/login.php';
+require_once __DIR__ . '/../../app/Services/RateLimitService/rateLimitService.php';
 
 $require_guest = new RequireGuest();
+$rate_limiter = new RateLimitService();
 $login = new Login();
 
 $require_guest->requireGuest();
+
+$identifier = $rate_limiter->buildIdentifier('login', ['ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+'email' => $_POST['email'] ?? '']);
+
+if (!$rate_limiter->attempt('login', $identifier)) {
+    http_response_code(429);
+    $_SESSION['flash'] = [
+        'type' => 'error',
+        'title' => 'Rate Limit Reached',
+        'message' => 'Too many login attemps. Please wait 15 minutes.'
+    ];
+    header('Location: /Event-Management-System/auth/login.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -46,4 +62,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-?>

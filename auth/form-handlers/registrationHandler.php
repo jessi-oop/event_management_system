@@ -1,13 +1,28 @@
 <?php
+
 session_start();
 require_once __DIR__ . '/../../app/Services/AuthService/isLoggedIn.php';
 require_once __DIR__ . '/../../app/Services/AuthService/register.php';
+require_once __DIR__ . '/../../app/Services/RateLimitService/rateLimitService.php';
 
 $is_logged_in = new IsLoggedIn();
+$rate_limiter = new RateLimitService();
 $register = new Register();
 
 if ($is_logged_in->isLoggedIn()) {
     header('Location: dashboard/index.php');
+    exit;
+}
+
+$identifier = $rate_limiter->buildIdentifier('register', ['ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown']);
+if (!$rate_limiter->attempt('register', $identifier)) {
+    http_response_code(429);
+    $_SESSION['flash'] = [
+        'type' => 'error',
+        'title' => 'Rate Limit Reached',
+        'message' => 'Too many registration attemps. Please wait 1 hour.'
+    ];
+    header('Location: /Event-Management-System/auth/register.php');
     exit;
 }
 
@@ -32,4 +47,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: /Event-Management-System/auth/register.php');
     exit;
 }
-?>

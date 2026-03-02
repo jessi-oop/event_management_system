@@ -22,12 +22,12 @@ if (!$categories) {
     <title>Create Event - EMS</title>
     <!-- Bootstrap CDN -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css "
       rel="stylesheet"
     />
     <!-- Bootstrap Icons -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css "
       rel="stylesheet"
     />
     <!-- External CSS -->
@@ -35,13 +35,7 @@ if (!$categories) {
     <link rel="stylesheet" href="/Event-Management-System/assets/css/create.css" />
 
     <!-- Bootstrap JS -->
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Optional: Form validation script -->
-    <script defer>
-      // Set minimum date to today
-      document.getElementById('event_date').min = new Date().toISOString().split('T')[0];
-    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js "></script>
   </head>
   <body>
         <!-- Sidebar -->
@@ -58,7 +52,8 @@ if (!$categories) {
 
             <!-- Event Creation Form -->
             <div class="form-container">
-              <form action="/Event-Management-System/events/form-handlers/createEventHandler.php" method="POST" id="createEventForm">
+              <form action="/Event-Management-System/events/form-handlers/createEventHandler.php" 
+              method="POST" id="createEventForm" enctype="multipart/form-data">
                 
                 <!-- Event Title -->
                 <div class="mb-4">
@@ -145,6 +140,57 @@ if (!$categories) {
                   />
                 </div>
 
+                <!-- Location Image Section -->
+                <div class="mb-4">
+                  <label class="form-label">Location Image</label>
+                  
+                  <div class="image-upload-container" id="imageUploadContainer">
+                    <!-- Initial Upload State -->
+                    <div class="upload-state-initial" id="uploadInitial">
+                      <div class="upload-icon-wrapper">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                      </div>
+                      <div class="upload-text-main">Click to upload venue photo</div>
+                      <div class="upload-text-sub">JPG, PNG, GIF up to 5MB</div>
+                      <label for="event_image" class="upload-button">Select Image</label>
+                      <input 
+                        type="file" 
+                        class="form-control d-none" 
+                        id="event_image" 
+                        name="event_image" 
+                        accept="image/*"
+                        onchange="previewSelectedImage(this)"
+                      />
+                    </div>
+
+                    <!-- Image Preview State (hidden by default) -->
+                    <div class="upload-state-preview d-none" id="uploadPreview">
+                      <div class="preview-image-wrapper">
+                        <img src="" alt="Venue preview" id="previewImage" />
+                        <div class="image-overlay">
+                          <span class="image-badge">New Image</span>
+                        </div>
+                      </div>
+                      <div class="upload-actions">
+                        <label for="event_image_replace" class="btn-change-image">
+                          <i class="bi bi-arrow-repeat"></i> Change Image
+                        </label>
+                        <input 
+                          type="file" 
+                          class="d-none" 
+                          id="event_image_replace" 
+                          accept="image/*"
+                          onchange="previewSelectedImage(this)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <small class="form-text text-muted mt-2">
+                    <i class="bi bi-info-circle"></i> Upload a clear photo of the venue to help attendees find the location.
+                  </small>
+                </div>
+
                 <!-- Capacity -->
                 <div class="mb-4">
                   <label for="capacity" class="form-label">Capacity</label>
@@ -186,5 +232,34 @@ if (!$categories) {
         </script>
       <?php endif; ?>
       
+      <script>
+        // Set minimum date to today
+        document.getElementById('event_date').min = new Date().toISOString().split('T')[0];
+        
+        // Preview selected image
+        function previewSelectedImage(input) {
+          if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const previewImg = document.getElementById('previewImage');
+              const initialState = document.getElementById('uploadInitial');
+              const previewState = document.getElementById('uploadPreview');
+              
+              previewImg.src = e.target.result;
+              initialState.classList.add('d-none');
+              previewState.classList.remove('d-none');
+              
+              // Update the main input with the selected file
+              const mainInput = document.getElementById('event_image');
+              const dt = new DataTransfer();
+              dt.items.add(input.files[0]);
+              mainInput.files = dt.files;
+            };
+            
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+      </script>
   </body>
 </html>

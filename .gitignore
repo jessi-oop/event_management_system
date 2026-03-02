@@ -99,3 +99,6 @@ public/uploads/*
 **/.php-cs-fixer.dist.php
 
 tests/
+
+/uploads/events/*
+!/uploads/events/.gitkeep
