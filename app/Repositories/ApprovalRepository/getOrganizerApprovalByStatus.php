@@ -3,18 +3,18 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/EventApproval.php';
 
-class GetOrganizerApprovalByStatusRepo {
+class GetOrganizerApprovalByStatusRepo
+{
     private $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
     }
 
     public function getOrganizerApprovalsByStatus($organizer_id, $status)
     {
         try {
-            $sql = 
-            
             $stmt = $this->db->prepare("SELECT * FROM event_approvals 
                     WHERE organizer_id = ? AND status = ?
                     ORDER BY submitted_at DESC");

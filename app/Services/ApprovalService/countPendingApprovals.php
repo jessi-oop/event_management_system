@@ -14,7 +14,7 @@ class CountPendingApprovalsService
     // Count pending approvals
     public function countPendingApprovals()
     {
-        return $this->eventApprovalRepo->countPendingApprovals();
+        return $this->count_pending_approvals->countPendingApprovals();
     }
 
 }

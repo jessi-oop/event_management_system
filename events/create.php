@@ -1,8 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
+require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 
 $category_service = new GetAllCategoriesService();
+$require_role = new RequireRole();
+
+$require_role->requireRole(['organizer', 'admin']);
 $categories = $category_service->getAllCategories();
 
 if (!$categories) {

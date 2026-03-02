@@ -1,16 +1,19 @@
 <?php
 
 require_once __DIR__ . '/../app/Services/AuthService/requireLogin.php';
+require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
 require_once __DIR__ . '/../app/Services/CategoryService/getCategoryById.php';
 require_once __DIR__ . '/../app/Services/RegistrationService/getEventAttendees.php';
 
 $require_login = new RequireLogin();
+$require_role = new RequireRole();
 $get_event_by_id = new GetEventByIdService();
 $get_category_by_id = new GetCategoryByIdService();
 $get_event_attendees = new GetEventAttendeesService();
 
 $require_login->requireLogin();
+$require_role->requireRole(['organizer', 'admin']);
 
 $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 $user_role = $_SESSION['role'] ?? 'guest';

@@ -195,7 +195,7 @@ $is_full = $available_slots <= 0;
                 <div class="action-section"> 
                 <!-- For organizers/admins only - Always show -->
                  <?php if ($can_edit): ?>
-                <a href="/Event-Management-System/events/form-handlers/editEventHandler.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-warning">
+                <a href="/Event-Management-System/events/edit.php?event_id=<?php echo $event->event_id; ?>" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Edit Event
                 </a>
                 <?php endif; ?>
@@ -214,10 +214,6 @@ $is_full = $available_slots <= 0;
                     </button>
                   <?php endif; ?>
                 <?php endif; ?>
-
-                 <a href="/Event-Management-System/organizer/attendees.php?event_id=<?php echo $event_id; ?>" class="btn btn-info">
-                    <i class="bi bi-people-fill"></i> View Attendees
-                </a>
               </div> <!-- CLOSE: action-section -->
 
             </div> <!-- CLOSE: details-container -->
@@ -243,7 +239,7 @@ $is_full = $available_slots <= 0;
               onConfirm: function() {
                   const form = document.createElement('form');
                   form.method = 'POST';
-                  form.action = '/Event-Management-System/events/form-handlers/registerEventHandler.php';
+                  form.action = '/Event-Management-System/events/form-handlers/registerToEventHandler.php';
                   
                   const input = document.createElement('input');
                   input.type = 'hidden';

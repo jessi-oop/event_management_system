@@ -14,7 +14,7 @@ class DeleteEventService
     {
         $this->delete_event =  new DeleteEventRepo();
         $this->get_event_by_id = new GetEventByIdRepo();
-        $this->get_current_user = new GetCurrentUser();
+        $this->get_current_user = new GetCurrentUserService();
     }
 
     public function deleteEvent($event_id)

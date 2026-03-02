@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../app/Services/EventService/getEventById.php';
 require_once __DIR__ . '/../app/Services/CategoryService/getAllCategories.php';
 
@@ -9,11 +10,15 @@ if (!$event_id) {
     exit;
 }
 
+$require_role = new RequireRole();
 $get_event_by_id = new GetEventByIdService();
 $get_ll_categories = new GetAllCategoriesService();
 
+$require_role->requireRole(['organizer', 'admin']);
 $event = $get_event_by_id->getEventById($event_id);
 $categories = $get_ll_categories->getAllCategories();
+
+$is_rejected = $event->approval_Status === 'rejected';
 
 if (!$event) {
     header('Location: /browse.php');
@@ -184,9 +189,18 @@ if (!$event) {
                   <button type="button" class="btn btn-danger" onclick="confirmDelete()">
                     <i class="bi bi-trash"></i> Delete Event
                   </button>
-                  <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle"></i> Update Event
-                  </button>
+                  <!-- Update button with dynamic text based on approval status -->
+                  <?php if ($is_rejected): ?>
+                      <!-- Button for REJECTED events -->
+                      <button type="submit" class="btn btn-success">
+                          <i class="bi bi-arrow-clockwise"></i> Update & Resubmit for Approval
+                      </button>
+                  <?php else: ?>
+                      <!-- Button for APPROVED/PENDING events -->
+                      <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-check-circle"></i> Update Event
+                      </button>
+                  <?php endif; ?>
                 </div>
 
               </form>

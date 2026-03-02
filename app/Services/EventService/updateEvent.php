@@ -19,7 +19,7 @@ class UpdateEventService
         $this->update_event = new UpdateEventRepo();
         $this->get_event_by_id = new GetEventByIdRepo();
         $this->get_all_category_ids = new GetAllCategoryIdsRepo();
-        $this->get_current_user = new GetCurrentUser();
+        $this->get_current_user = new GetCurrentUserService();
         $this->validate_event = new ValidateEventDetails();
     }
 

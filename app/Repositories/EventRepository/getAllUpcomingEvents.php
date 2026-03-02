@@ -12,11 +12,14 @@ class GetAllUpcomingEventsRepo
         $this->db = Database::getInstance()->getConnection();
     }
 
-    //Used to get all the upcoming events
+    //Used to get all the upcoming events that are approved
     public function getAllUpcomingEvents()
     {
         try {
-            $stmt = $this->db->query('SELECT * FROM event_summary WHERE event_date >= CURDATE() ORDER BY event_date ASC, event_time ASC ');
+            $stmt = $this->db->query('SELECT * FROM event_summary 
+                                      WHERE event_date >= CURDATE() 
+                                      AND approval_status = "approved"
+                                      ORDER BY event_date ASC, event_time ASC');
 
             $events = [];
             while ($data = $stmt->fetch()) {

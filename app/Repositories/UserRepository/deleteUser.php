@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/User.php';
 
-class deleteUserc{
+class DeleteUserRepo
+{
     private $db;
 
     public function __construct()
@@ -11,7 +12,7 @@ class deleteUserc{
         $this->db = Database::getInstance()->getConnection();
     }
 
-    
+
     // Delete user
     public function deleteUser($user_id)
     {

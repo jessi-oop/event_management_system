@@ -2,9 +2,13 @@
 
 require_once __DIR__ . '/../../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../../app/Services/EventService/updateEvent.php';
+require_once __DIR__ . '/../../app/Services/EventService/getEventById.php';
+require_once __DIR__ . '/../../app/Service/ApprovalService/submitForApproval.php';
 
 $require_role = new RequireRole();
+$get_event_by_id = new GetEventByIdService();
 $update_event = new UpdateEventService();
+$submit_for_approval = new SubmitForApprovalService();
 
 $require_role->requireRole(['organizer', 'admin']);
 
@@ -17,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (!$event_id) {
     header('Location: /Event-Management-System/organizer/manage.php');
 }
+
+$event = $get_event_by_id->getEventById($event_id);
 
 $message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

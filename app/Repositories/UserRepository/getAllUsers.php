@@ -3,8 +3,9 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/User.php';
 
-class getAllUsers {
-     private $db;
+class getAllUsersRepo
+{
+    private $db;
 
     public function __construct()
     {

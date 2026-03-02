@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/getApprovalById.php';
 require_once __DIR__ . '/../../Repositories/ApprovalRepository/approveEvent.php';
-require_once __DIR__ . '/../ActivityLog/logActivity.php';
+require_once __DIR__ . '/../ActivityLogService/logActivity.php';
 
 class ApproveEventService
 {

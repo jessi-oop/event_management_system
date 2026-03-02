@@ -16,7 +16,7 @@ class CreateEventService
     {
         $this->create_event = new CreateEventRepo();
         $this->get_category_ids = new GetAllCategoryIdsRepo();
-        $this->get_current_user = new GetCurrentUser();
+        $this->get_current_user = new GetCurrentUserService();
         $this->validate_event_details = new ValidateEventDetails();
     }
 

@@ -7,31 +7,30 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Load repositories
+// Load repositories and services
 require_once __DIR__ . '/../app/Services/UserService/getAllUsers.php';
 require_once __DIR__ . '/../app/Services/EventService/getAllEvents.php';
-require_once __DIR__ . '/../app/Repositories/ApprovalRepository/getPendingApprovals.php';
-require_once __DIR__ . '/../app/Repositories/ActivityRepository/getRecentActivity.php';
-require_once __DIR__ . '/../app/Repositories/StatisticsRepository/getEventsByMonth.php';
+require_once __DIR__ . '/../app/Services/ApprovalService/countPendingApprovals.php';
+require_once __DIR__ . '/../app/Services/ActivityLogService/getRecentActivities.php';
+require_once __DIR__ . '/../app/Services/EventService/getEventCountByMonth.php';
 
 // Get statistics
-$users_repo = new GetAllUsersRepo();
-$events_repo = new GetAllEventsRepo();
-$approvals_repo = new GetPendingApprovalsRepo();
-$activity_repo = new GetRecentActivityRepo();
-$stats_repo = new GetEventsByMonthRepo();
+$get_all_users = new GetAllUsersService();
+$get_all_events = new GetAllEventsService();
+$count_pending_approvals = new CountPendingApprovalsService();
+$get_recent_activities = new GetRecentActivitiesService();
+$get_event_count_by_month = new GetEventCountByMonthService();
 
-$all_users = $users_repo->getAllUsers();
-$all_events = $events_repo->getAllEvents();
-$pending_approvals = $approvals_repo->getPendingApprovals();
-$recent_activity = $activity_repo->getRecentActivity(10); // Last 10 activities
-$events_by_month = $stats_repo->getEventsByMonth(6); // Last 6 months
+$all_users = $get_all_users->getAllUsers();
+$all_events = $get_all_events->getAllEvents();
+$pending_count = $count_pending_approvals->countPendingApprovals();
+$recent_activity = $get_recent_activities->getRecentActivities(10); // Last 10 activities
+$events_by_month = $get_event_count_by_month->getEventCountByMonth(6); // Last 6 months
 
 // Calculate statistics
 $total_users = count($all_users);
 $total_events = count($all_events);
 $total_registrations = array_sum(array_column($all_events, 'registered_count'));
-$pending_count = count($pending_approvals);
 
 // Sample data for chart (replace with actual data)
 // Format: ['month' => 'Jan', 'count' => 5]
@@ -217,7 +216,7 @@ $pending_count = count($pending_approvals);
                                         <i class="bi bi-chevron-right"></i>
                                     </a>
 
-                                    <a href="../events/browse.php" class="quick-link">
+                                    <a href="/Event-Management-System/events/browse.php" class="quick-link">
                                         <div class="quick-link-icon" style="background: #E0E7FF; color: #4F46E5;">
                                             <i class="bi bi-eye"></i>
                                         </div>
@@ -253,20 +252,16 @@ $pending_count = count($pending_approvals);
                                         </div>
                                     <?php else: ?>
                                         <?php foreach ($recent_activity as $activity):
-                                            $time_ago = time_elapsed_string($activity['created_at']);
+                                            $time_ago = time_elapsed_string($activity->created_at);
                                             ?>
                                         <div class="activity-item">
-                                            <div class="activity-icon <?php echo $activity['type']; ?>">
-                                                <i class="bi bi-<?php echo get_activity_icon($activity['type']); ?>"></i>
+                                            <div class="activity-icon <?php echo strtolower($activity->type); ?>">
+                                                <i class="bi bi-<?php echo get_activity_icon($activity->type); ?>"></i>
                                             </div>
                                             <div class="activity-content">
-                                                <div class="activity-text"><?php echo htmlspecialchars($activity['description']); ?></div>
+                                                <div class="activity-text"><?php echo htmlspecialchars($activity->description); ?></div>
                                                 <div class="activity-meta">
                                                     <span class="activity-time"><?php echo $time_ago; ?></span>
-                                                    <?php if (isset($activity['user_name'])): ?>
-                                                        <span class="activity-separator">•</span>
-                                                        <span class="activity-user"><?php echo htmlspecialchars($activity['user_name']); ?></span>
-                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -379,12 +374,12 @@ function time_elapsed_string($datetime)
 function get_activity_icon($type)
 {
     $icons = [
-        'user_registered' => 'person-plus',
-        'event_created' => 'calendar-plus',
-        'event_registered' => 'ticket',
-        'event_cancelled' => 'x-circle',
-        'event_approved' => 'check-circle',
-        'event_rejected' => 'x-octagon'
+        'EVENT_SUBMISSION' => 'calendar-plus',
+        'EVENT_APPROVED' => 'check-circle',
+        'EVENT_REJECTED' => 'x-octagon',
+        'USER_REGISTERED' => 'person-plus',
+        'EVENT_REGISTERED' => 'ticket',
+        'EVENT_CANCELLED' => 'x-circle'
     ];
     return $icons[$type] ?? 'circle';
 }
