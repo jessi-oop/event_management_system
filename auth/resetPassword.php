@@ -65,7 +65,7 @@ if ($token) {
                 id="password"
                 placeholder="Enter new password"
                 required
-                minlength="6"
+                minlength="8"
               />
               <button type="button" class="password-toggle-btn" id="togglePassword">
                 <i class="bi bi-eye" id="toggleIcon"></i>
@@ -82,7 +82,7 @@ if ($token) {
                 id="confirm_password"
                 placeholder="Confirm new password"
                 required
-                minlength="6"
+                minlength="8"
               />
               <button type="button" class="password-toggle-btn" id="toggleConfirmPassword">
                 <i class="bi bi-eye" id="toggleConfirmIcon"></i>

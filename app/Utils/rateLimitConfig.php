@@ -5,7 +5,8 @@
  * No logic, no dependencies
  */
 
-class RateLimitConfig {
+class RateLimitConfig
+{
     public const RULES = [
         'login' => [
             'max_attempts' => 5,
@@ -26,10 +27,16 @@ class RateLimitConfig {
             'max_attempts' => 10,
             'window_minutes' => 1,
             'identifier_type' => 'user_id'
+        ],
+        'update_user' => [
+            'max_attempts' => 3,
+            'window_minutes' => 60,
+            'identifier_type' => 'user_id'
         ]
     ];
 
-    public static function get(string $action): ?array {
+    public static function get(string $action): ?array
+    {
         return self::RULES[$action] ?? null;
     }
 }

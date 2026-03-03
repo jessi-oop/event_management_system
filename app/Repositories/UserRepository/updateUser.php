@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../../Core/Database.php';
 require_once __DIR__ . '/../../Entities/User.php';
 
-class updateUser {
+class UpdateUserRepo
+{
     private $db;
 
     public function __construct()
@@ -11,8 +12,8 @@ class updateUser {
         $this->db = Database::getInstance()->getConnection();
     }
 
-     // Update user info
-    public function updateUser($user_id, $full_name, $email)
+    // Update user info
+    public function updateUser($full_name, $email, $user_id)
     {
         try {
             $stmt = $this->db->prepare('UPDATE users SET full_name = ?, email = ? WHERE user_id = ?');

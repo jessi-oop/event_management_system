@@ -23,7 +23,7 @@ class ResetPasswordWithTokenRepo
             if ($result) {
                 $output = $result->fetch();
                 return [
-                    'success' => $output['result'] === 'success', // ⭐ Fixed typo: 'sucsess' → 'success'
+                    'success' => $output['result'] === 'success',
                     'message' => $output['message']
                 ];
             }

@@ -151,7 +151,7 @@ $role_display = ucfirst($user_role);
              ========================================== -->
 
         <li class="nav-item">
-          <a href="/Event-Management-System/user/profile.php" class="nav-link <?php echo $current_page === 'profile' ? 'active' : ''; ?>">
+          <a href="/Event-Management-System/events/userProfile.php" class="nav-link <?php echo $current_page === 'profile' ? 'active' : ''; ?>">
             <i class="bi bi-person"></i>
             <span>Profile</span>
           </a>

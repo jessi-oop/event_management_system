@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '../UserRepository/getUserById.php';
+require_once __DIR__ . '/../../Repositories/UserRepository/getUserById.php';
 
 class GetUserByIdService
 {
@@ -13,16 +13,11 @@ class GetUserByIdService
 
     public function getUserById($user_id)
     {
-        if (empty($user_id)) {
+        if (!$user_id) {
             return ['success' => false, 'message' => 'Error getting user. User ID is empty.'];
         }
 
-        $user = $this->get_user_by_id->getUserById($user_id);
+        return $this->get_user_by_id->getUserById($user_id);
 
-        if ($user) {
-            return $user;
-        }
-
-        return ['success' => false, 'message' => 'Error getting user.'];
     }
 }
