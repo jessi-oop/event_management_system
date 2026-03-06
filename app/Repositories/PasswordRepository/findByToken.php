@@ -2,22 +2,25 @@
 
 require_once __DIR__ . '/../../Core/Database.php';
 
-class FindByToken {
+class FindByToken
+{
     private $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    public function findByToken($token){
+    public function findByToken($token)
+    {
         try {
             $stmt = $this->db->prepare('CALL sp_validate_token(?)');
             $stmt->execute([$token]);
-            
+
             $result = $stmt->fetch();
             $stmt->closeCursor();
-            
-            if($result){
+
+            if ($result) {
                 return $result;
             }
 

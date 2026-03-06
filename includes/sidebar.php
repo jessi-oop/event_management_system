@@ -26,7 +26,7 @@ $role_display = ucfirst($user_role);
     
     <!-- Logo/Title -->
     <div class="sidebar-header">
-      <h4 class="sidebar-title">EMS</h4>
+      <h4 class="sidebar-title">COORDINA</h4>
       <button class="sidebar-close d-md-none" id="sidebarClose">
         <i class="bi bi-x-lg"></i>
       </button>

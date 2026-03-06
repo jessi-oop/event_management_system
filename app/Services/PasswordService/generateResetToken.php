@@ -33,7 +33,7 @@ class GenerateResetTokenService
         }
 
         $token = bin2hex(random_bytes(32));
-        $expires_at = date('Y-m-d H:i:s', time() + 3600);
+        $expires_at = null;
 
         $create_token = $this->create_token->createToken($user->user_id, $token, $expires_at);
 

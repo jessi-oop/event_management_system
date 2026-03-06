@@ -21,12 +21,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $reset_password->resetPassword($token, $password, $confirm_password);
 
     if ($result['success']) {
-        $_SESSION['modal_message'] = $result['message'] . " You can now login with your new password.";
-        $_SESSION['modal_type'] = "success";
-        header("Location: /Event-Management-System/auth/login.php");
+        $_SESSION['flash'] = [
+        'type' => 'success',
+        'title' => 'Password Reset Successful',
+        'message' => 'Password changed successfully.'
+    ];
+        header('Location: /Event-Management-System/auth/login.php');
+
     } else {
-        $_SESSION['modal_message'] = $result['message'];
-        $_SESSION['modal_type'] = "error";
+        $_SESSION['flash'] = [
+        'type' => 'error',
+        'title' => 'Error',
+        'message' => 'Error in changing password. Please try again later.'
+    ];
         header('Location: /Event-Management-System/auth/resetPassword.php?token=' . urlencode($token));
     }
 

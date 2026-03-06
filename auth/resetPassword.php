@@ -1,5 +1,7 @@
 <?php
+
 session_start();
+
 
 require_once __DIR__ . '/../app/Services/PasswordService/validateToken.php';
 
@@ -9,15 +11,19 @@ $token = isset($_GET['token']) ? $_GET['token'] : '';
 $valid_token = false;
 $email = '';
 
+
+
 if ($token) {
     $validate = $validate_token->validateToken($token);
-
     if ($validate['valid']) {
         $valid_token = true;
         $email = $validate['data']['email'];
     } else {
-        $_SESSION['modal_message'] = $validate['message'];
-        $_SESSION['modal_type'] = "error";
+        $_SESSION['flash'] = [
+        'type' => 'error',
+        'title' => 'Error',
+        'message' => $validate['message']
+    ];
     }
 }
 ?>

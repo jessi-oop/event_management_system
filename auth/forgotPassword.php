@@ -1,9 +1,16 @@
 <?php
 session_start();
+
 $show_reset_link = isset($_SESSION['show_reset_link']) ? $_SESSION['show_reset_link'] : false;
 $reset_token = isset($_SESSION['reset_token']) ? $_SESSION['reset_token'] : '';
 $reset_email = isset($_SESSION['reset_email']) ? $_SESSION['reset_email'] : '';
-unset($_SESSION['show_reset_link'], $_SESSION['reset_token'], $_SESSION['reset_email']);
+
+// Only clear if user explicitly dismissed or came from the reset page
+if (isset($_GET['dismiss']) || isset($_GET['from_reset'])) {
+    unset($_SESSION['show_reset_link'], $_SESSION['reset_token'], $_SESSION['reset_email']);
+    header('Location: /Event-Management-System/auth/forgotPassword.php');
+    exit;
+}
 ?>
 
 <!doctype html>
@@ -20,7 +27,6 @@ unset($_SESSION['show_reset_link'], $_SESSION['reset_token'], $_SESSION['reset_e
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
-    <!-- ↓ Now using its own dedicated stylesheet -->
     <link rel="stylesheet" href="../assets/css/forgot-password.css" />
   </head>
   <body class="login-body">
@@ -30,35 +36,39 @@ unset($_SESSION['show_reset_link'], $_SESSION['reset_token'], $_SESSION['reset_e
         Enter your email address and we'll generate a password reset link.
       </p>
 
-      <form method="POST" action="/Event-Management-System/auth/form-handlers/forgotPasswordHandler.php">
-        <div class="login-form-group">
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-          />
-        </div>
+      <?php if (!$show_reset_link): ?>
+        <form method="POST" action="/Event-Management-System/auth/form-handlers/forgotPasswordHandler.php">
+          <div class="login-form-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
 
-        <div class="login-form-group">
-          <input type="submit" value="Send Reset Link" />
-        </div>
+          <div class="login-form-group">
+            <input type="submit" value="Send Reset Link" />
+          </div>
 
-        <div class="login-form-group">
-          <p class="register-redirect">
-            Remember your password?
-            <a href="login.php">Back to Login</a>
-          </p>
-        </div>
-      </form>
+          <div class="login-form-group">
+            <p class="register-redirect">
+              Remember your password?
+              <a href="login.php">Back to Login</a>
+            </p>
+          </div>
+        </form>
+      <?php endif; ?>
 
       <?php if ($show_reset_link && $reset_token): ?>
         <div class="reset-link-panel">
           <h6>
-            <i class="bi bi-key-fill"></i> Reset Link Generated
+            <i class="bi bi-key-fill"></i> Reset Link Generated Successfully
           </h6>
+          
+          <p class="mb-3">Click the button below to reset your password:</p>
           
           <a 
             href="/Event-Management-System/auth/resetPassword.php?token=<?php echo htmlspecialchars($reset_token); ?>"
@@ -70,6 +80,12 @@ unset($_SESSION['show_reset_link'], $_SESSION['reset_token'], $_SESSION['reset_e
           <p class="expire-note">
             <i class="bi bi-clock"></i> This link expires in 1 hour
           </p>
+          
+          <div class="mt-3">
+            <a href="?dismiss=1" class="text-muted" style="font-size: 0.875rem;">
+              <i class="bi bi-x-circle"></i> Dismiss and request a new link
+            </a>
+          </div>
         </div>
       <?php endif; ?>
     </div>

@@ -23,7 +23,7 @@
                 <div class="col-lg-6 hero-left">
                     <div class="brand-badge">
                         <div class="brand-icon">E</div>
-                        <span class="brand-text">Event Management System</span>
+                        <span class="brand-text">Coordina-Event Management System</span>
                     </div>
 
                     <h1 class="hero-heading">
