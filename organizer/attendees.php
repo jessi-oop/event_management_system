@@ -28,15 +28,15 @@ $event = $get_event_by_id->getEventById($event_id);
 $category = $get_category_by_id->getCategoryById($event->category_id);
 
 // Get attendees with new format
-$result = $get_event_attendees->getEventAttendees($event_id);
+$attendees = $get_event_attendees->getEventAttendees($event_id);
 
-// Handle the response
-if ($result['success']) {
-    $attendees = $result['data'];
-} else {
-    $error_message = $result['message'];
-    $attendees = [];
-}
+// // Handle the response
+// if ($result['success']) {
+//     $attendees = $result['data'];
+// } else {
+//     $error_message = $result['message'];
+//     $attendees = [];
+// }
 
 $can_view = false;
 

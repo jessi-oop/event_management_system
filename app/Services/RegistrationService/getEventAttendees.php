@@ -29,7 +29,7 @@ class GetEventAttendeesService
         $event_attendees = $this->get_event_attendees->getEventAttendees($event_id);
 
         if ($event_attendees) {
-            return ['success' => true, 'data' => $event_attendees];
+            return $event_attendees;
         }
 
         return ['success' => false, 'message' => 'Failed to retrieve attendees.'];

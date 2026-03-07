@@ -47,26 +47,6 @@
                         </a>
                     </div>
 
-                    <div class="row stats-container g-4">
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <div class="stat-number">10K+</div>
-                                <div class="stat-label">Events Created</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <div class="stat-number">50K+</div>
-                                <div class="stat-label">Active Users</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="stat-item">
-                                <div class="stat-number">99.9%</div>
-                                <div class="stat-label">Uptime</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Right Content - Feature Cards -->

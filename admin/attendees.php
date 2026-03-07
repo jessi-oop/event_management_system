@@ -7,8 +7,8 @@ require_once __DIR__ . '/../app/Services/AuthService/requireRole.php';
 require_once __DIR__ . '/../app/Services/RegistrationService/getEventAttendees.php';
 
 $require_role = new RequireRole();
-$get_event_by_id = new GetEventByIdRepo();
-$get_event_attendees = new GetEventAttendeesRepo();
+$get_event_by_id = new GetEventByIdService();
+$get_event_attendees = new GetEventAttendeesService();
 
 $require_role->requireRole(['admin']);
 
@@ -22,6 +22,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 $event_id = isset($_GET['event_id']) ? intval($_GET['event_id']) : 0;
 $event = $get_event_by_id->getEventById($event_id);
 $attendees = $get_event_attendees->getEventAttendees($event_id);
+
+// echo '<pre>';
+// var_dump($attendees);
+// echo '</pre>';
+// die;
 
 if (!$event_id) {
     header('Location: /Event-Management-System/admin/events.php');
@@ -173,7 +178,7 @@ $formatted_time = date('g:i A', strtotime($event->event_time));
                         <table class="table attendees-table" id="attendeesTable">
                             <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th>ID</th>
                                     <th>Full Name</th>
                                     <th>Email</th>
                                     <th>Registration Date</th>
