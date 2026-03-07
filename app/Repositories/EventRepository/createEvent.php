@@ -22,15 +22,17 @@ class CreateEventRepo
         $event_time,
         $location,
         $capacity,
-        $image_path
+        $image_path,
+        $approval_status = 'pending'
     ) {
         try {
             $stmt = $this->db->prepare('INSERT INTO events 
             (organizer_id, category_id, title, description, event_date,
-            event_time, location, capacity, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)') ;
+            event_time, location, capacity, image_path, approval_status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)') ;
 
             $data = $stmt->execute([$organizer_id, $category_id, $title, $description, $event_date,
-            $event_time, $location, $capacity, $image_path]);
+            $event_time, $location, $capacity, $image_path, $approval_status]);
 
             if ($data) {
                 return $this->db->lastInsertId(); //Returns the id of the last inserted row in the table

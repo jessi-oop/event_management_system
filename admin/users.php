@@ -220,7 +220,7 @@ $attendees = count(array_filter($users, fn ($u) => $u->role === 'attendee'));
         // Edit User
         function editUser(data) {
             // You can create an edit modal or redirect to edit page
-            window.location.href = 'edit-user.php?user_id=' + data.userId;
+            window.location.href = 'editUser.php?user_id=' + data.userId;
         }
 
         // Delete User

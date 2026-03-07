@@ -14,10 +14,6 @@ require_once __DIR__ . '/../app/Services/EventService/getAllEvents.php';
 $get_all_events = new GetAllEventsService();
 $events = $get_all_events->getAllEvents();
 
-// Sample data structure (replace with your actual repo data)
-// $events = [
-//     ['event_id' => 1, 'event_title' => 'Tech Conference', 'organizer_name' => 'John Doe', 'event_date' => '2024-03-15', 'event_time' => '09:00', 'capacity' => 500, 'registered_count' => 342, 'location' => 'NYC'],
-// ];
 ?>
 <!DOCTYPE html>
 <html lang="en">

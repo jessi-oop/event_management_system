@@ -19,10 +19,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 
-    if(!$user_id){
+    if (!$user_id) {
         $_SESSION['flash'] = [
             'type' => 'error',
             'title' => 'Invalid Request',
@@ -40,11 +40,15 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             'title' => 'User Deleted',
             'message' => 'The user has been deleted.'
         ];
+        header('Location: /Event-Management-System/admin/approvals.php');
+        exit;
     } else {
         $_SESSION['flash'] = [
             'type' => 'error',
             'title' => 'Deletion Failed',
             'message' => $result['message'] ?? 'Failed to delete user. Please try again.'
         ];
+        header('Location: /Event-Management-System/admin/approvals.php');
+        exit;
     }
 }

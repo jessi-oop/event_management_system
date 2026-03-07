@@ -73,7 +73,10 @@ class CreateEventService
             // Start transaction
             $this->db->beginTransaction();
 
-            // Create event
+            // Determine approval status based on role
+            $approval_status = ($current_user->role === 'admin') ? 'approved' : 'pending';
+
+            // Create event with appropriate approval status
             $event_id = $this->create_event->createEvent(
                 $organizer_id,
                 $category_id,
@@ -83,27 +86,34 @@ class CreateEventService
                 $event_time,
                 $location,
                 $capacity,
-                $image_path
+                $image_path,
+                $approval_status
             );
 
             if (!$event_id) {
                 throw new Exception('Failed to create event in database');
             }
 
-            // Submit for approval (INSIDE TRANSACTION)
-            $approval_result = $this->submit_for_approval->submitForApproval($event_id, $organizer_id);
+            // Only submit for approval if user is an organizer (not admin)
+            if ($current_user->role !== 'admin') {
+                $approval_result = $this->submit_for_approval->submitForApproval($event_id, $organizer_id);
 
-            if (!$approval_result) {
-                throw new Exception('Failed to submit for approval');
+                if (!$approval_result['success']) {
+                    throw new Exception('Failed to submit for approval');
+                }
+
+                $message = 'Event created and submitted for approval.';
+            } else {
+                $message = 'Event created and automatically approved.';
             }
 
-            // Commit transaction (both event + approval)
+            // Commit transaction
             $this->db->commit();
 
             return [
                 'success' => true,
                 'event_id' => $event_id,
-                'message' => 'Event created successfully.'
+                'message' => $message
             ];
 
         } catch (Exception $e) {

@@ -12,12 +12,12 @@ require_once __DIR__ . '/../../app/Services/RateLimitService/rateLimitService.ph
 require_once __DIR__ . '/../../app/Entities/User.php';
 require_once __DIR__ . '/../../app/Core/Database.php';
 require_once __DIR__ . '/../../app/Services/EventService/createEvent.php';
-require_once __DIR__ . '/../../app/Services/ApprovalService/submitForApproval.php';
+require_once __DIR__ . '/../../app/Services/AuthService/getCurrentUser.php';
 
 $validate_event_details = new ValidateEventDetails();
 $rate_limiter = new RateLimitService();
 $create_event = new CreateEventService();
-$submit_for_approval = new SubmitForApprovalService();
+$get_current_user = new GetCurrentUserService();
 $user = new User();
 $db = Database::getInstance()->getConnection();
 
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Create event with image path
+    // Create event (service handles approval logic internally)
     $event_created = $create_event->createEvent(
         $category_id,
         $title,
@@ -102,17 +102,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($event_created['success']) {
-        $event_id = intval($db->lastInsertId());
-        $organizer_id = $_SESSION['user_id'];
+        // Get current user to determine role
+        $current_user = $get_current_user->getCurrentUser();
 
-        $submit_for_approval->submitForApproval($event_id, $organizer_id);
-
-        $_SESSION['flash'] = [
-            'type' => 'success',
-            'title' => 'Event submitted',
-            'message' => 'Event has been submitted to Admin for approval.'
-        ];
-        header('Location: /Event-Management-System/organizer/manage.php');
+        // Set flash message and redirect based on role
+        if ($current_user && $current_user->role === 'admin') {
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'title' => 'Event Created',
+                'message' => 'Event has been created and automatically approved.'
+            ];
+            header('Location: /Event-Management-System/admin/index.php');
+        } else {
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'title' => 'Event Submitted',
+                'message' => 'Event has been submitted to Admin for approval.'
+            ];
+            header('Location: /Event-Management-System/organizer/manage.php');
+        }
         exit;
     } else {
         // Delete uploaded image if event creation failed

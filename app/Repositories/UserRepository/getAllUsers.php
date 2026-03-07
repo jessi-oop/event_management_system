@@ -16,7 +16,7 @@ class getAllUsersRepo
     public function getAllUsers()
     {
         try {
-            $stmt = $this->db->query('SELECT user_id, full_name, email, role, created_at FROM users ORDER BY created_at DESC');
+            $stmt = $this->db->query('SELECT user_id, full_name, email, role, created_at FROM users ORDER BY created_at ASC');
             $users = []; //an array of associative arrays that will hold user data/user objet
 
             while ($data = $stmt->fetch()) { //fetch the returned value and store it into the users array

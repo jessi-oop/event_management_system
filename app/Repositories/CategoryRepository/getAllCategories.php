@@ -15,7 +15,7 @@ class GetAllCategoriesRepo
     public function getAllCategories()
     {
         try {
-            $stmt = $this->db->query('SELECT * FROM categories ORDER BY category_name ASC');
+            $stmt = $this->db->query('SELECT * FROM categories');
 
             $categories = [];
             while ($data = $stmt->fetch()) {
